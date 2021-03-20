@@ -1,77 +1,69 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEditor;
 using UnityEngine;
 
 [ExecuteInEditMode]
 public class NewLevelGenerator : MonoBehaviour
 {
-    private GameObject[][,] walls;
+    #region Geometry constants
+    public const float WALLSIZE = 17f;
+    public const int NUMBER_OF_WALLS = 6;
+    public const float THETA = 360f / NUMBER_OF_WALLS;
+    public static readonly float INNER_RADIUS = WALLSIZE * (1f / Mathf.Tan(Mathf.PI / 6f));
+    public static readonly float OUTER_RADIUS = WALLSIZE * (1f / Mathf.Sin(Mathf.PI / 6f));
+    #endregion
 
+    #region Prefab References
+    [Header("Prefab References")]
     [SerializeField]
     private GameObject WallPrefab;
+    [SerializeField]
+    private GameObject RoomPrefab;
+    #endregion
 
+    #region Generation Properties
+    [Header("Generation Properties")]
+    [Tooltip("The number of rooms between the centre and outside, inclusive of the centre room")]
     [SerializeField]
     private int radius;
-
     [SerializeField]
+    [Header("Wall Generation Properties")]
+    [Tooltip("The number of rotation groups")]
     private int n = 3;
-    [SerializeField]
-    private bool applyGroupRotation = true;
+    #endregion
 
+    #region Fields
+    private GameObject wallParent, roomParent;
+    #endregion
+
+
+    private void InstantiateParent(ref GameObject parent, string name)
+    {
+        DestroyImmediate(parent);
+
+        parent = new GameObject(name);
+        parent.transform.parent = this.transform;
+    }
+
+    /// <summary>
+    /// (Re)Instantiates Wall Objects
+    /// </summary>
     public void InstantiateWalls()
     {
-        transform.DestroyChildren();
-        walls = new GameObject[n][,];
+        InstantiateParent(ref wallParent, "Walls");
 
-        for (int i = 0; i < n; i++)
-        {
-            GameObject parent = new GameObject("Wall Group " + i);
-            parent.transform.parent = transform;
-            
-
-            walls[i] = InstantiateWallSet(parent.transform);
-            parent.transform.localRotation = Quaternion.Euler(0f, ((float)i / n) * 360f, 0f);
-        }
-
+        WallGenerator.InstantiateWalls(wallParent.transform, WallPrefab, n, radius);
     }
+    
 
-
-    private GameObject[,] InstantiateWallSet(Transform parent)
+    /// <summary>
+    /// (Re)Instantiates Room Objects
+    /// </summary>
+    public void InstantiateRooms()
     {
-        GameObject[,] gameObjects;
-        int size = Size(radius);
-        gameObjects = new GameObject[size, size];
+        InstantiateParent(ref roomParent, "Rooms");
 
-        for (int y = 0; y < size - 1; y++)
-        {
-            int t = Mathf.Abs(y - (radius - 1));
-            for (int x = 0; x < size - t; x++)
-            {
-                //if (InBounds(radius, x, y))
-                {
-                    GameObject wall = (GameObject)PrefabUtility.InstantiatePrefab(WallPrefab, parent);
-                    wall.name = $"{x}, {y}";
-                    wall.transform.position = applyGroupRotation? AbsolutePosition(radius, x, y) : RelativePosition(radius, x, y);
-                    //gameObjects[x, y] = wall;
-                }
-            }
-        }
-            
+        RoomGenerator.InstantiateRooms(roomParent.transform, RoomPrefab, radius);
 
-        return gameObjects;
     }
-
-
-
-    private static Vector3 AbsolutePosition(int radius, float x, float y) => RelativePosition(radius, x, y) - new Vector3((radius-1) * WallModel.INNER_RADIUS + WallModel.INNER_RADIUS / 2f  ,0f, ((radius - 1) * (WallModel.OUTER_RADIUS - ((WallModel.OUTER_RADIUS/2)-(WallModel.WALLSIZE/2)))) + WallModel.OUTER_RADIUS / 2);
-    //private static Vector3 RelativePosition(float x, float y) => new Vector3(x * WallModel.INNER_RADIUS + (WallModel.INNER_RADIUS * y / 2f), 0f, ((WallModel.OUTER_RADIUS + WallModel.WALLSIZE) / 2f) * y);
-
-    private static Vector3 RelativePosition(int radius, float x, float y) => new Vector3((x * WallModel.INNER_RADIUS) + (Mathf.Abs(y - (radius - 1)) * (WallModel.INNER_RADIUS / 2f)), 0f, (y+1) * (WallModel.OUTER_RADIUS / 2f) + y * (WallModel.WALLSIZE / 2f));
-    private static bool InBounds(int radius, int x, int y) => (x + y) > (radius - 2) && (x + y) <= Size(radius) + (radius - 2);
-
-    private static int Size(int radius) => radius * 2;
 
 
 }

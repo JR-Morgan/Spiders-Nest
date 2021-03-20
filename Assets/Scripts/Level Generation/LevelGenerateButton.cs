@@ -5,14 +5,24 @@ using UnityEngine;
 [RequireComponent(typeof(NewLevelGenerator))]
 public class LevelGenerateButton : MonoBehaviour
 {
-    NewLevelGenerator gen;
-
-    public void Generate()
-    {
-        if(gen == null)
+    private NewLevelGenerator _gen;
+    private NewLevelGenerator Gen { get
         {
-            gen = GetComponent<NewLevelGenerator>();
+            if (_gen == null)
+            {
+                _gen = GetComponent<NewLevelGenerator>();
+            }
+            return _gen;
         }
-        gen.InstantiateWalls();
+    }
+
+    public void GenerateRooms()
+    {
+        Gen.InstantiateRooms();
+    }
+
+    public void GenerateWalls()
+    {
+        Gen.InstantiateWalls();
     }
 }

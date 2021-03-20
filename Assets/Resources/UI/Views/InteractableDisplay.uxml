@@ -1,0 +1,7 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <ui:VisualElement style="flex-grow: 1; align-items: center; justify-content: center; bottom: 0; position: absolute; right: 0; left: 0; flex-direction: column-reverse; padding-bottom: 10%;">
+        <ui:VisualElement style="padding-left: 20px; padding-right: 20px; padding-top: 20px; padding-bottom: 20px; margin-left: 20px; margin-right: 20px; margin-top: 20px; margin-bottom: 20px; background-color: rgb(220, 221, 225);">
+            <ui:Label text="Message" display-tooltip-when-elided="true" name="Message" style="-unity-text-align: middle-center; flex-grow: 0; margin-top: 0; font-size: 24px; margin-bottom: 0; margin-left: 0; margin-right: 0;" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

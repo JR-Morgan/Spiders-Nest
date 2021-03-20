@@ -21,17 +21,35 @@ public class LevelGenerateButtonEditor : Editor
     {
         root.Clear();
 
-        Button button = new Button
+        //Walls
         {
-            text = "Generate"
-        };
+            Button generate = new Button
+            {
+                text = "Generate Walls"
+            };
 
-        button.RegisterCallback<ClickEvent>(evt =>
+            generate.RegisterCallback<ClickEvent>(evt =>
+            {
+                levelGen.GenerateWalls();
+            });
+       
+        root.Add(generate);
+        }
+
+        //Rooms
         {
-            levelGen.Generate();
-        });
+            Button rooms = new Button
+            {
+                text = "Generate Rooms"
+            };
 
-        root.Add(button);
+            rooms.RegisterCallback<ClickEvent>(evt =>
+            {
+                levelGen.GenerateRooms();
+            });
+
+            root.Add(rooms);
+        }
 
         return root;
     }

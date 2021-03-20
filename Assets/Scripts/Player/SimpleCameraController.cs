@@ -11,7 +11,8 @@ namespace UnityTemplateProjects
     
     public class SimpleCameraController : MonoBehaviour
     {
-        private Camera _camera;
+        private new Camera camera;
+        
         class CameraState
         {
             public float yaw;
@@ -31,7 +32,7 @@ namespace UnityTemplateProjects
 
             public void UpdateTransform(Transform t, Transform c)
             {
-                c.transform.localRotation = Quaternion.Euler(pitch, 0f, 0f);
+                c.localRotation = Quaternion.Euler(pitch, 0f, 0f);
                 t.eulerAngles = new Vector3(0f, yaw, 0f);
             }
         }
@@ -56,13 +57,13 @@ namespace UnityTemplateProjects
         void OnEnable()
         {
             Cursor.lockState = CursorLockMode.Locked;
-            m_TargetCameraState.SetFromTransform(transform);
-            m_InterpolatingCameraState.SetFromTransform(transform);
+            //m_TargetCameraState.SetFromTransform(transform);
+           // m_InterpolatingCameraState.SetFromTransform(transform);
         }
 
         private void Awake()
         {
-            _camera = GetComponentInChildren<Camera>();
+            camera = GetComponentInChildren<Camera>();
         }
 
         void Update()
@@ -93,7 +94,7 @@ namespace UnityTemplateProjects
             var rotationLerpPct = 1f - Mathf.Exp((Mathf.Log(1f - 0.99f) / rotationLerpTime) * Time.deltaTime);
             m_InterpolatingCameraState.LerpTowards(m_TargetCameraState, rotationLerpPct);
 
-            m_InterpolatingCameraState.UpdateTransform(transform, _camera.transform);
+            m_InterpolatingCameraState.UpdateTransform(transform, camera.transform);
         }
     }
 

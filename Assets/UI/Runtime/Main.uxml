@@ -1,0 +1,8 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <ui:Template name="HudElement" src="HUD/HudElement.uxml" />
+    <ui:Template name="Crosshair" src="Crosshair/Crosshair.uxml" />
+    <ui:VisualElement style="width: 300px; background-color: rgb(135, 135, 135); margin-left: 10px; margin-right: 10px; margin-top: 10px; margin-bottom: 10px; padding-left: 5px; padding-right: 5px; padding-top: 5px; padding-bottom: 5px;">
+        <ui:Instance template="HudElement" name="HudElement" />
+    </ui:VisualElement>
+    <ui:Instance template="Crosshair" name="Crosshair" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0;" />
+</ui:UXML>
