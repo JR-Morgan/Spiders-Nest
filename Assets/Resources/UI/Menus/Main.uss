@@ -1,0 +1,8 @@
+#Root > * > TemplateContainer {
+    flex-grow: 1;
+    flex-shrink: 1;
+}
+
+#Root > * {
+    flex-grow: 1;
+}

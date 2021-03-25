@@ -18,11 +18,7 @@ public class LevelGenerateButton : MonoBehaviour
 
     public void GenerateRooms()
     {
-        Gen.InstantiateRooms();
+        Gen.InstantiateAll();
     }
 
-    public void GenerateWalls()
-    {
-        Gen.InstantiateWalls();
-    }
 }

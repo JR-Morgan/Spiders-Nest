@@ -1,0 +1,19 @@
+.Option {
+    width: 25%;
+    font-size: 72px;
+    margin-top: 1%;
+    margin-bottom: 1%;
+    background-color: rgba(0, 0, 0, 0);
+    border-left-color: rgba(0, 0, 0, 0);
+    border-right-color: rgba(0, 0, 0, 0);
+    border-top-color: rgba(0, 0, 0, 0);
+    border-bottom-color: rgba(0, 0, 0, 0);
+    -unity-text-align: upper-center;
+}
+
+Label {
+    color: rgb(220, 221, 225);
+    -unity-font-definition: resource('Fonts & Materials/DellaRespira-Regular SDF');
+    -unity-font: resource('Fonts & Materials/DellaRespira-Regular');
+    text-shadow: 0 0 7px rgb(0, 0, 0);
+}

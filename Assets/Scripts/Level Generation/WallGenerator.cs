@@ -18,12 +18,20 @@ public static class WallGenerator
             group.transform.parent = parent.transform;
 
             walls[i] = InstantiateWallSet(group.transform, radius, wallPrefab);
-            group.transform.localRotation = Quaternion.Euler(0f, ((float)i / n) * 360f, 0f);
+            group.transform.localRotation = Quaternion.Euler(0f, CalculateRotation(i,n), 0f);
         }
 
         return walls;
 
     }
+
+    /// <summary>
+    /// Calculates the rotation
+    /// </summary>
+    /// <param name="i">the index of the wall group (normally between 0-2)</param>
+    /// <param name="n">the number of wall groups (normally 3)</param>
+    /// <returns>rotation angle in degrees</returns>
+    public static float CalculateRotation(int i, int n) => ((float)i / n) * 360f;
 
     private static GameObject[,] InstantiateWallSet(Transform parent, int radius, GameObject wallPrefab)
     {
@@ -40,6 +48,15 @@ public static class WallGenerator
                 GameObject wall = (GameObject)PrefabUtility.InstantiatePrefab(wallPrefab, parent);
                 wall.name = $"{x}, {y}";
                 wall.transform.position = AbsolutePosition(radius, x, y);
+
+                if(wall.TryGetComponent(out WallController controller))
+                {
+                    controller.X = x;
+                    controller.Y = y;
+                }
+
+
+                gameObjects[x, y] = wall;
             }
         }
 

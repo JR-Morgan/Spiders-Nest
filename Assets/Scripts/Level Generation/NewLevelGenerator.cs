@@ -31,6 +31,8 @@ public class NewLevelGenerator : MonoBehaviour
     #endregion
 
     #region Fields
+    [Header("Read Only")]
+    [SerializeField]
     private GameObject wallParent, roomParent;
     #endregion
 
@@ -43,27 +45,101 @@ public class NewLevelGenerator : MonoBehaviour
         parent.transform.parent = this.transform;
     }
 
-    /// <summary>
-    /// (Re)Instantiates Wall Objects
-    /// </summary>
-    public void InstantiateWalls()
-    {
-        InstantiateParent(ref wallParent, "Walls");
-
-        WallGenerator.InstantiateWalls(wallParent.transform, WallPrefab, n, radius);
-    }
-    
 
     /// <summary>
-    /// (Re)Instantiates Room Objects
+    /// (Re)Instantiates Rooms and Wall objects
     /// </summary>
-    public void InstantiateRooms()
+    public void InstantiateAll()
     {
         InstantiateParent(ref roomParent, "Rooms");
+        InstantiateParent(ref wallParent, "Walls");
 
-        RoomGenerator.InstantiateRooms(roomParent.transform, RoomPrefab, radius);
+        GameObject[][,] wallGroups = WallGenerator.InstantiateWalls(wallParent.transform, WallPrefab, n, radius);
+
+        GameObject[,] rooms = RoomGenerator.InstantiateRooms(roomParent.transform, RoomPrefab, radius);
+
+
+        for(int i = 0; i < wallGroups.Length; i++)
+        {
+            float angle = WallGenerator.CalculateRotation(i, n) * Mathf.Deg2Rad;
+            for (int roomY = 0; roomY < rooms.GetLength(1); roomY++)
+            {
+                int offset = -Mathf.Max(radius - roomY - 1, 0);
+
+                for (int roomX = Mathf.Max(radius - roomY - 1, 0); roomX < rooms.GetLength(0); roomX++)
+                {
+
+                    GameObject go = rooms[roomX, roomY];
+                    if (go != null)
+                    {
+                        RoomController room = go.GetComponent<RoomController>();
+
+                        if(i == 0)
+                        {
+                            WallController w1 = wallGroups[i][roomX + offset, roomY].GetComponent<WallController>();
+                            WallController w2 = wallGroups[i][roomX + offset + 1, roomY].GetComponent<WallController>();
+                            AddWalls(room, w1, w2);
+                        }
+                        else
+                        {
+                            Vector2 roomPosition = new Vector2(room.transform.position.x, room.transform.position.z); 
+                            Vector2 rotatedPosition = roomPosition.RotateAround(0f, 0f, angle);
+
+
+                            if (TryGetGameObjectAtPosition(rooms, new Vector3(rotatedPosition.x, 0f, rotatedPosition.y), out GameObject targetRoom))
+                            {
+                                RoomController target = targetRoom.GetComponent<RoomController>();
+
+                                WallController w1 = target.Walls[0], w2 = target.Walls[1];
+
+                                w1 = wallGroups[i][w1.X, w1.Y].GetComponent<WallController>();
+                                w2 = wallGroups[i][w2.X, w2.Y].GetComponent<WallController>();
+      
+                                AddWalls(room, w1, w2);
+                            }
+                            else
+                            {
+                                Debug.Log($"Couldn't find room at position {rotatedPosition}");
+                            }
+
+                        }
+
+                    }
+
+                }
+            }
+        }
+
+        static void AddWalls(RoomController room, params WallController[] walls)
+        {
+            foreach(WallController wall in walls)
+            {
+                room.Walls.Add(wall);
+                wall.Rooms.Add(room);
+            }
+        }
 
     }
 
 
+    private static bool TryGetGameObjectAtPosition(GameObject[,] rooms, Vector3 position, out GameObject room)
+    {
+        for(int x = 0; x < rooms.GetLength(0); x++)
+        {
+            for (int y = 0; y < rooms.GetLength(1); y++)
+            {
+                GameObject r = rooms[x, y];
+                if(r != null)
+                {
+                    if (Vector3.Distance(r.transform.position, position) < 0.001f) // This allows for floating point rounding errors
+                    {
+                        room = r;
+                        return true;
+                    }
+                }
+            }
+        }
+        room = null;
+        return false;
+    }
 }

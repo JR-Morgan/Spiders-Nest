@@ -2,7 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[RequireComponent(typeof(Camera))]
 public class PlayerAttackController : MonoBehaviour
 {
     //[SerializeField]
@@ -13,7 +12,8 @@ public class PlayerAttackController : MonoBehaviour
     private new Camera camera;
     private void Awake()
     {
-        camera = GetComponent<Camera>();
+        camera = GetComponentInChildren<Camera>();
+        if (camera == null) Debug.LogWarning($"Could not find {typeof(Camera)} component in children", this);
     }
 
     private void Update()

@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+[RequireComponent(typeof(PlayerInventory))]
 public class Interactor : MonoBehaviour
 {
     private const float MaxRaycastDistance = 7f;
@@ -19,7 +20,8 @@ public class Interactor : MonoBehaviour
 
     private void Start()
     {
-        camera = GameObject.FindGameObjectWithTag("Player").GetComponentInChildren<Camera>();
+        camera = GetComponentInChildren<Camera>();
+        if (camera == null) Debug.LogWarning($"Could not find {typeof(Camera)} component in children", this);
     }
 
     public void AddKeyListener(KeyCode key, Action action)

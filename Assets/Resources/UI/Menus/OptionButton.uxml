@@ -1,0 +1,7 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <ui:VisualElement name="Container" focusable="true" style="flex-grow: 1; flex-direction: row;">
+        <ui:VisualElement name="LeftIcon" style="width: 100px; height: 150px; flex-shrink: 0; background-image: url(&apos;/Assets/Sprites/Crosshair 1.png&apos;); -unity-background-scale-mode: scale-and-crop;" />
+        <ui:Label text="Label" display-tooltip-when-elided="true" name="Label" style="flex-grow: 1; font-size: 72px; -unity-text-align: middle-center;" />
+        <ui:VisualElement name="RightIcon" style="width: 100px; height: 150px; flex-shrink: 0; background-image: url(&apos;/Assets/Sprites/Crosshair 1.png&apos;); -unity-background-scale-mode: scale-and-crop;" />
+    </ui:VisualElement>
+</ui:UXML>

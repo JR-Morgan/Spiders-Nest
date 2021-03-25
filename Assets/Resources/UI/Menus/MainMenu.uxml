@@ -1,0 +1,13 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="MainMenu.uss" />
+    <ui:VisualElement style="flex-grow: 1; justify-content: center; background-color: rgb(84, 5, 0);">
+        <ui:VisualElement>
+            <ui:Label text="Veins of Hell" display-tooltip-when-elided="true" name="Title" style="font-size: 128px; -unity-text-align: upper-center;" />
+        </ui:VisualElement>
+        <ui:VisualElement style="align-items: center; justify-content: center; flex-grow: 0; padding-top: 0; margin-top: 2%; margin-bottom: 2%;">
+            <OptionButton name="New" Label_Text="New Game" Is_Selected="false" />
+            <OptionButton name="Continue" Label_Text="Continue" Is_Selected="false" />
+            <OptionButton name="Options" Label_Text="Options" Is_Selected="false" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

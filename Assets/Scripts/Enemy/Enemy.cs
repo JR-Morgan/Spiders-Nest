@@ -9,19 +9,27 @@ using UnityEngine.Events;
 [RequireComponent(typeof(NavMeshAgent))]
 public class Enemy : MonoBehaviour
 {
+    private const float DEFAULT_MAX_HEALTH = 100f;
+
     public UnityEvent OnDeath;
 
     [SerializeField]
-    private float health = 100;
+    private float maxHealth = DEFAULT_MAX_HEALTH;
+
+    private float health;
 
     [SerializeField]
     private Transform goal;
 
     private NavMeshAgent agent;
 
+    private bool isStarted = true;
+
     void Awake()
     {
+        health = maxHealth;
         agent = GetComponent<NavMeshAgent>();
+        isStarted = true;
     }
 
     void Start()
@@ -30,18 +38,28 @@ public class Enemy : MonoBehaviour
         agent.destination = goal.position;
     }
 
+    public void OnEnable()
+    {
+        if (isStarted)
+        {
+            Awake();
+            Start();
+        }
+    }
 
     public void AddDamage(float damage)
     {
         health -= damage;
         if(health <= 0)
         {
-            Destroy(gameObject);
+            Invoke(nameof(Die), 0.00001f);
         }
-    }
 
-    private void OnDestroy()
+
+    }
+    public void Die()
     {
         OnDeath.Invoke();
     }
+
 }

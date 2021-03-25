@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 [SelectionBase]
@@ -9,6 +10,13 @@ public class RoomController : MonoBehaviour
 
     [SerializeField]
     private GameObject[] types;
+
+    [SerializeField]
+    public List<Vector2Int> wallcoords = new List<Vector2Int>();
+
+    [SerializeField]
+    private List<WallController> _walls;
+    public List<WallController> Walls { get => _walls; set => _walls = value; }
 
     private void OnValidate()
     {

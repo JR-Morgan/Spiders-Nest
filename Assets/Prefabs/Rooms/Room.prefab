@@ -28,7 +28,7 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1.7, y: 1, z: 1.7}
   m_Children:
-  - {fileID: 1311055824474254957}
+  - {fileID: 2390544091034017352}
   - {fileID: 3538502824568613241}
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -48,6 +48,8 @@ MonoBehaviour:
   roomType: 0
   types:
   - {fileID: 1311055824474254963}
+  wallcoords: []
+  _walls: []
 --- !u!65 &5437523676754714972
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -163,9 +165,9 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 1553669156428770110, guid: 0c21eafbd1a6d9a4f9b38247f841df65, type: 3}
   m_PrefabInstance: {fileID: 558010461003728205}
   m_PrefabAsset: {fileID: 0}
---- !u!224 &1311055824474254957 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 1553669156428770080, guid: 0c21eafbd1a6d9a4f9b38247f841df65, type: 3}
+--- !u!4 &2390544091034017352 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2779451740132055813, guid: 0c21eafbd1a6d9a4f9b38247f841df65, type: 3}
   m_PrefabInstance: {fileID: 558010461003728205}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &3932188860194066066
@@ -226,6 +228,10 @@ PrefabInstance:
     - target: {fileID: 919132149155446097, guid: 90c0158dd8dae5749899acbfaf6e2c54, type: 3}
       propertyPath: m_Name
       value: Floor
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 90c0158dd8dae5749899acbfaf6e2c54, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 90c0158dd8dae5749899acbfaf6e2c54, type: 3}

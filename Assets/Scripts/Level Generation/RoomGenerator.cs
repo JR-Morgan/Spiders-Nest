@@ -15,8 +15,8 @@ public static class RoomGenerator
         boardArray = new GameObject[size, size];
 
         // int radius = boardArray.length;
-        for (int x = 0; x < size; x++)
         for (int y = 0; y < size; y++)
+        for (int x = 0; x < size; x++)
         {
             if (InBounds(radius, x, y))
             {
