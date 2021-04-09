@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 using UnityEngine.Events;
 
 public class EnemyManager : Singleton<EnemyManager>
@@ -20,10 +21,6 @@ public class EnemyManager : Singleton<EnemyManager>
     private LayerMask enemyLayer;
     #endregion
 
-
-
-
-
     protected override void Awake()
     {
         base.Awake();
@@ -33,7 +30,7 @@ public class EnemyManager : Singleton<EnemyManager>
         if (enemyPrefab.GetComponent<Enemy>() == null) enemyPrefab.AddComponent<Enemy>();
 
         enemyPool = new List<Enemy>(POOL_STEP_SIZE);
-        for(int i = 0; i < enemyPool.Capacity; i++)
+        for(int i = 0; i < POOL_STEP_SIZE; i++)
         {
             Enemy enemy = CreateNewEnemy();
             enemy.gameObject.SetActive(false);
@@ -48,7 +45,9 @@ public class EnemyManager : Singleton<EnemyManager>
         GameObject enemyObject = Instantiate(enemyPrefab, position, rotation, enemyParent);
         enemyObject.layer = Mathf.RoundToInt(Mathf.Log(enemyLayer.value, 2));
         Enemy enemy = enemyObject.GetComponent<Enemy>();
-        enemy.OnDeath.AddListener(() => RemoveEnemy(enemy));
+        enemy.OnDeath.AddListener(() => {
+            if (!RemoveEnemy(enemy)) Debug.LogWarning($"{typeof(Enemy)} died but could not be removed from {typeof(EnemyManager)}", enemy);
+        });
 
         return enemy;
     }
@@ -75,10 +74,10 @@ public class EnemyManager : Singleton<EnemyManager>
         {
             enemy = CreateNewEnemy(position, rotation);
         }
-        Enemies.Add(enemy);
         return enemy;
     }
     #endregion
+
 
     private int _enemiesKilled = 0;
 
@@ -92,14 +91,38 @@ public class EnemyManager : Singleton<EnemyManager>
         }
     }
 
-    public void RemoveEnemy(Enemy enemy)
+    public bool AddEnemy(Enemy enemy)
     {
-        Enemies.Remove(enemy);
-        enemyPool.Add(enemy);
-        enemy.gameObject.SetActive(false);
-        EnemiesKilled++;
+        if (Enemies.Contains(enemy)) return false;
+        if (enemyPool.Contains(enemy))
+        {
+            enemyPool.Remove(enemy);
+        }
+        Enemies.Add(enemy);
+        return true;
+    }
+
+    public bool RemoveEnemy(Enemy enemy)
+    {
+        if (Enemies.Remove(enemy))
+        {
+            enemyPool.Add(enemy);
+            enemy.gameObject.SetActive(false);
+            EnemiesKilled++;
+            return true;
+        }
+        return false;
     }
 
     public UnityEvent<int> OnChange;
 
+
+    public void Update()
+    {
+        if(Enemies.Count > 0)
+        {
+            Enemy enemy = Enemies[Time.frameCount % Enemies.Count];
+            enemy.CalculatePath();
+        }
+    }
 }

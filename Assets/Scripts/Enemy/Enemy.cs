@@ -34,7 +34,7 @@ public class Enemy : MonoBehaviour
 
     void Start()
     {
-        if (goal == null) goal = GameObject.FindGameObjectWithTag("Start").transform;
+        if (goal == null) goal = GameObject.FindGameObjectWithTag("Player").transform;
         agent.destination = goal.position;
     }
 
@@ -44,7 +44,14 @@ public class Enemy : MonoBehaviour
         {
             Awake();
             Start();
+            EnemyManager.Instance.AddEnemy(this);
         }
+        
+    }
+
+    public void OnDisable()
+    {
+        EnemyManager.Instance.RemoveEnemy(this);
     }
 
     public void AddDamage(float damage)
@@ -54,12 +61,17 @@ public class Enemy : MonoBehaviour
         {
             Invoke(nameof(Die), 0.00001f);
         }
-
-
     }
+
     public void Die()
     {
         OnDeath.Invoke();
+    }
+
+    public bool CalculatePath()
+    {
+        if (!agent.isOnNavMesh) return false;
+        return this.agent.SetDestination(goal.position);
     }
 
 }
