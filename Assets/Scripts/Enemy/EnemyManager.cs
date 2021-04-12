@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -6,74 +7,109 @@ using UnityEngine.Events;
 
 public class EnemyManager : Singleton<EnemyManager>
 {
-    private const int POOL_STEP_SIZE = 100;
-    #region Prefab References
-    [Header("Prefab References")]
-    [SerializeField]
-    private GameObject enemyPrefab;
-    #endregion
+    private const int DEFAULT_RESERVE_SIZE = 100;
 
-    #region Scene references
+    #region Serialised Fields
     [Header("Scene References")]
     [SerializeField]
     private Transform enemyParent;
     [SerializeField]
     private LayerMask enemyLayer;
+
+    [Header("Evolution Settings")]
+
+    [SerializeField]
+    private EnemyTypeData[] enemyData;
+
+    [Header("Settings")]
+    [Range(0f, 1f)]
+    [SerializeField]
+    private float updateProportion;
+
+    [SerializeField]
+    private List<Enemy> _enemies;
+    private List<Enemy> reservePool;
     #endregion
+
+    public List<Enemy> ActivePool => _enemies;
 
     protected override void Awake()
     {
         base.Awake();
 
-        Enemies = new List<Enemy>();
+        if(_enemies == null) _enemies = new List<Enemy>();
 
-        if (enemyPrefab.GetComponent<Enemy>() == null) enemyPrefab.AddComponent<Enemy>();
-
-        enemyPool = new List<Enemy>(POOL_STEP_SIZE);
-        for(int i = 0; i < POOL_STEP_SIZE; i++)
+        //Enemy Types Validation
         {
-            Enemy enemy = CreateNewEnemy();
-            enemy.gameObject.SetActive(false);
-            enemyPool.Add(enemy);
+            if (enemyData.Length < Enum.GetNames(typeof(EnemyType)).Length) Debug.LogWarning($"{nameof(enemyData)} is missing some {typeof(EnemyType)}s", this);
+            for (int i = 0; i < enemyData.Length; i++)
+            {
+                if ((int)enemyData[i].typeID != i) Debug.LogWarning($"Mismatch between {typeof(EnemyType)} and index in {nameof(enemyData)} at index {i}\n({enemyData[i]}) is id {(int)enemyData[i].typeID}", this);
+                if (enemyData[i].movementSpeed <= 0) Debug.LogWarning($"{ nameof(EnemyTypeData.movementSpeed)} at index {i}\n({enemyData[i]}) was <= zero (was this intentional?)", this);
+            }
+        }
+
+
+        //Enemy Initialisation
+        {
+            EnemyAgentFactory.Initialise(GameObject.FindGameObjectsWithTag("Player"));
+
+            int reservePoolSize = Mathf.Max(DEFAULT_RESERVE_SIZE - _enemies.Count, 0);
+            reservePool = new List<Enemy>(reservePoolSize);
+            for(int i = 0; i < reservePoolSize; i++)
+            {
+                Enemy enemy = CreateNewEnemy();
+                reservePool.Add(enemy);
+            }
         }
 
         
     }
 
-    private Enemy CreateNewEnemy(Vector3 position = default, Quaternion rotation = default)
+    /// <summary>
+    /// Instantiates a new <see cref="GameObject"/> with an uninitialised <see cref="Enemy"/> component
+    /// </summary>
+    /// <returns></returns>
+    private Enemy CreateNewEnemy()
     {
-        GameObject enemyObject = Instantiate(enemyPrefab, position, rotation, enemyParent);
-        enemyObject.layer = Mathf.RoundToInt(Mathf.Log(enemyLayer.value, 2));
+        //GameObject enemyObject = Instantiate(enemyData[(int)enemyType].prefab, position, rotation, enemyParent);
+        GameObject enemyObject = new GameObject(nameof(Enemy), typeof(Enemy))
+        {
+            layer = enemyLayer.ToLayerNumber(),
+        };
+        enemyObject.SetActive(false);
+
         Enemy enemy = enemyObject.GetComponent<Enemy>();
         enemy.OnDeath.AddListener(() => {
-            if (!RemoveEnemy(enemy)) Debug.LogWarning($"{typeof(Enemy)} died but could not be removed from {typeof(EnemyManager)}", enemy);
+            if (!RetireEnemy(enemy)) Debug.LogWarning($"{typeof(Enemy)} died but could not be removed from {typeof(EnemyManager)}", enemy);
         });
 
         return enemy;
     }
 
 
-    private List<Enemy> enemyPool;
-
-    public List<Enemy> Enemies { get; set; }
 
     #region Factory methods
-    public Enemy InstantiateEnemy(Vector3 position) => InstantiateEnemy(position, Quaternion.identity);
-    public Enemy InstantiateEnemy(Vector3 position, Quaternion rotation)
+    public Enemy GetInitialisedEnemy(Vector3 position, EnemyType type = 0) => GetInitialisedEnemy(position, Quaternion.identity, type);
+    public Enemy GetInitialisedEnemy(Vector3 position, Quaternion rotation, EnemyType enemyType = 0)
     {
         Enemy enemy;
-        if(enemyPool.Count > 0)
+        if(reservePool.Count > 0)
         {
-            enemy = enemyPool[0];
-            enemy.transform.position = position;
-            enemy.transform.rotation = rotation;
-            enemy.gameObject.SetActive(true);
-            enemyPool.RemoveAt(0);
+            enemy = reservePool[0];
+            reservePool.RemoveAt(0);
         }
         else
         {
-            enemy = CreateNewEnemy(position, rotation);
+            enemy = CreateNewEnemy();
         }
+
+        enemy.transform.position = position;
+        enemy.transform.rotation = rotation;
+
+        ReinitialiseWithType(enemy, enemyType);
+
+        enemy.gameObject.SetActive(true);
         return enemy;
     }
     #endregion
@@ -91,22 +127,27 @@ public class EnemyManager : Singleton<EnemyManager>
         }
     }
 
-    public bool AddEnemy(Enemy enemy)
+    public bool ActivateEnemy(Enemy enemy)
     {
-        if (Enemies.Contains(enemy)) return false;
-        if (enemyPool.Contains(enemy))
+        if (ActivePool.Contains(enemy)) return false;
+        if (reservePool.Contains(enemy))
         {
-            enemyPool.Remove(enemy);
+            reservePool.Remove(enemy);
         }
-        Enemies.Add(enemy);
+        ActivePool.Add(enemy);
         return true;
     }
 
-    public bool RemoveEnemy(Enemy enemy)
+    /// <summary>
+    /// Tries to remove enemy active pool and add to 
+    /// </summary>
+    /// <param name="enemy"></param>
+    /// <returns></returns>
+    public bool RetireEnemy(Enemy enemy)
     {
-        if (Enemies.Remove(enemy))
+        if (ActivePool.Remove(enemy))
         {
-            enemyPool.Add(enemy);
+            reservePool.Add(enemy);
             enemy.gameObject.SetActive(false);
             EnemiesKilled++;
             return true;
@@ -117,12 +158,40 @@ public class EnemyManager : Singleton<EnemyManager>
     public UnityEvent<int> OnChange;
 
 
+    private int offset;
     public void Update()
     {
-        if(Enemies.Count > 0)
+        int amountToUpdate = (int)(ActivePool.Count * updateProportion);
+        if (ActivePool.Count > 0)
         {
-            Enemy enemy = Enemies[Time.frameCount % Enemies.Count];
-            enemy.CalculatePath();
+            int counter = 0;
+            while(counter++ != amountToUpdate && ActivePool.Count > counter)
+            {
+                Enemy enemy = ActivePool[(counter + offset) % ActivePool.Count];
+                enemy.Tick();
+            }
+
+            offset += counter;
         }
     }
+
+
+    #region Evolution
+
+
+    public void ReinitialiseWithType(Enemy enemy, EnemyType enemyType)
+    {
+        enemy.Initialise(enemyData[(int)enemyType]);
+    }
+
+    public bool Evolve(Enemy enemy)
+    {
+        int targetType = (int)enemy.EnemyType.typeID + 1;
+        if (targetType >= Enum.GetNames(typeof(EnemyType)).Length) return false;
+        
+        ReinitialiseWithType(enemy, (EnemyType)targetType);
+        return true;
+    }
+
+    #endregion
 }

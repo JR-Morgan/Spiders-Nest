@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 1416011104485666814}
   - component: {fileID: 904167735375865884}
   - component: {fileID: 1656959554234493109}
-  - component: {fileID: 8722000646650393403}
   - component: {fileID: 7963741694751486713}
   m_Layer: 0
   m_Name: RoomManager
@@ -50,6 +49,8 @@ MonoBehaviour:
   RoomPrefab: {fileID: 2163098146795507668, guid: f82d10431cd5bfc4bbd994db6ab7e207, type: 3}
   radius: 3
   n: 3
+  wallParent: {fileID: 0}
+  roomParent: {fileID: 0}
 --- !u!114 &1656959554234493109
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -62,22 +63,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a8e2877c67c68d349bb2d5c1ea209d22, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &8722000646650393403
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1416011104485666812}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b3f05f907a1b1ae42980ae3e46b03059, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  enemyPrefab: {fileID: 751437156892078535, guid: d24bbcd803b6f5c4fa66bf76725bbe36, type: 3}
-  OnChange:
-    m_PersistentCalls:
-      m_Calls: []
 --- !u!114 &7963741694751486713
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -105,5 +90,5 @@ MonoBehaviour:
   m_TileSize: 256
   m_OverrideVoxelSize: 0
   m_VoxelSize: 0.16666667
-  m_BuildHeightMesh: 0
   m_NavMeshData: {fileID: 0}
+  m_BuildHeightMesh: 0

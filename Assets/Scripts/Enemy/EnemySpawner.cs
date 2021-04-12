@@ -53,7 +53,7 @@ public class EnemySpawner : MonoBehaviour
     {
         for(int i = 0; i < size; i++)
         {
-            EnemyManager.Instance.InstantiateEnemy(transform.position, Quaternion.identity);
+            EnemyManager.Instance.GetInitialisedEnemy(transform.position, Quaternion.identity);
         }
     }
 

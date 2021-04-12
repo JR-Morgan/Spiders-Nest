@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [SelectionBase]
+[ExecuteInEditMode]
 public class WallController : MonoBehaviour
 {
     [SerializeField]
@@ -16,12 +17,15 @@ public class WallController : MonoBehaviour
     public int X { get; set; }
     public int Y { get; set; }
 
-
+#if UNITY_EDITOR
     private void OnValidate()
     {
-        foreach (GameObject t in types) t.SetActive(false);
-        types[(int)wallType].SetActive(true);
+        if (types[(int)wallType].activeInHierarchy != true)
+        {
+            foreach (GameObject t in types) t.SetActive(false);
+            types[(int)wallType].SetActive(true);
+        }
     }
-
+#endif
 
 }

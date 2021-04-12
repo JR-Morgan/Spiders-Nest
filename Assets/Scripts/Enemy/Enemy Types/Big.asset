@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2ac9ea0bcb6e6fb41917d60b26b42f02, type: 3}
+  m_Name: Big
+  m_EditorClassIdentifier: 
+  typeID: 2
+  prefab: {fileID: 8766003184790580209, guid: 35fec6f5bfa165249963a72000fe9b7b, type: 3}
+  proababiltyToEvolve: 0.1
+  timeUntilEvolve: 30
+  timeToEvolve: 0
+  maxHealth: 100
+  movementSpeed: 3.5

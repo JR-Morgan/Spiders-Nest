@@ -9,69 +9,105 @@ using UnityEngine.Events;
 [RequireComponent(typeof(NavMeshAgent))]
 public class Enemy : MonoBehaviour
 {
-    private const float DEFAULT_MAX_HEALTH = 100f;
-
-    public UnityEvent OnDeath;
-
+    #region Serialised Fields
     [SerializeField]
-    private float maxHealth = DEFAULT_MAX_HEALTH;
-
+    private EnemyTypeData _enemyData;
+    [SerializeField]
     private float health;
-
     [SerializeField]
     private Transform goal;
+    #endregion
 
-    private NavMeshAgent agent;
+    private NavMeshAgent navAgent;
 
-    private bool isStarted = true;
+    #region Properties
+    public float MaxHealth => _enemyData.maxHealth;
+    public float Health => health;
+    public EnemyTypeData EnemyType => _enemyData;
+
+    public float SpeedProportion
+    {
+        get => navAgent.speed / _enemyData.movementSpeed;
+        set => navAgent.speed = _enemyData.movementSpeed * value;
+    }
+
+    public Transform Goal
+    {
+        get => goal;
+        set => goal = value;
+    }
+
+    #endregion
+
+    #region Initialisation
 
     void Awake()
     {
-        health = maxHealth;
-        agent = GetComponent<NavMeshAgent>();
-        isStarted = true;
+        navAgent = GetComponent<NavMeshAgent>();
     }
 
-    void Start()
+    public void Initialise(EnemyTypeData enemyData, float health)
     {
-        if (goal == null) goal = GameObject.FindGameObjectWithTag("Player").transform;
-        agent.destination = goal.position;
+        this._enemyData = enemyData;
+        this.health = health;
+        this.navAgent.speed = enemyData.movementSpeed;
+
+        transform.DestroyChildren();
+        Instantiate(enemyData.prefab, transform);
+
+
+        float timeOfEvolve = UnityEngine.Random.value < EnemyType.proababiltyToEvolve ? Time.time + enemyData.timeUntilEvolve : - 1; //TODO add some small variation
+        agent = EnemyAgentFactory.CreateAgent(this, enemyData.typeID, timeOfEvolve);
+
     }
+
+    public void Initialise(EnemyTypeData enemyData) => Initialise(enemyData, enemyData.maxHealth);
+
 
     public void OnEnable()
     {
-        if (isStarted)
-        {
-            Awake();
-            Start();
-            EnemyManager.Instance.AddEnemy(this);
-        }
-        
+        EnemyManager.Instance.ActivateEnemy(this);
     }
 
     public void OnDisable()
     {
-        EnemyManager.Instance.RemoveEnemy(this);
+        EnemyManager.Instance.RetireEnemy(this);
     }
+    #endregion
 
+    #region Damage
     public void AddDamage(float damage)
     {
         health -= damage;
-        if(health <= 0)
+        if (health <= 0)
         {
             Invoke(nameof(Die), 0.00001f);
         }
     }
 
+    public UnityEvent OnDeath = new UnityEvent();
     public void Die()
     {
         OnDeath.Invoke();
     }
+    #endregion
 
-    public bool CalculatePath()
+    #region Enemy Behaviour
+    private EnemyAgent agent;
+    public bool Tick()
     {
-        if (!agent.isOnNavMesh) return false;
-        return this.agent.SetDestination(goal.position);
-    }
+        if (!navAgent.isOnNavMesh) return false;
 
+        agent.Act();
+        if (goal == null) return false;
+        
+        
+
+
+
+
+        return this.navAgent.SetDestination(goal.position);
+        
+    }
+    #endregion
 }

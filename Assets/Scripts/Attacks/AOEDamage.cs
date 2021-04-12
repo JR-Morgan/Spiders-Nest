@@ -5,7 +5,7 @@ using UnityEngine;
 public class AOEDamage : MonoBehaviour
 {
     [SerializeField]
-    private float Damage = 100;
+    private float Damage = 50;
 
     private HashSet<Enemy> enemies = new HashSet<Enemy>();
 
@@ -15,7 +15,7 @@ public class AOEDamage : MonoBehaviour
     }
     void OnTriggerEnter(Collider other)
     {
-        if(other.TryGetComponent(out Enemy enemy))
+        if(other.gameObject.TryGetComponentInParents(out Enemy enemy))
         {
             enemies.Add(enemy);
             enemy.OnDeath.AddListener(OnDeath);
@@ -25,7 +25,7 @@ public class AOEDamage : MonoBehaviour
     }
     void OnTriggerExit(Collider other)
     {
-        if (other.TryGetComponent(out Enemy enemy))
+        if (other.gameObject.TryGetComponentInParents(out Enemy enemy))
         {
             enemies.Remove(enemy);
         }

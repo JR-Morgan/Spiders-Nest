@@ -269,7 +269,7 @@ Transform:
   m_GameObject: {fileID: 1053978658133368307}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 2, y: 2.5, z: 2}
   m_Children:
   - {fileID: 1053978657373546973}
   - {fileID: 1053978657630042995}
@@ -387,4 +387,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 79d3d961591ebf444bccc5d55aaac894, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  attackLayer:
+    serializedVersion: 2
+    m_Bits: 512
   holePrefab: {fileID: 9199876460922002132, guid: 7520ddb8c967ea948aed47af53c0384c, type: 3}
