@@ -6,7 +6,7 @@ using UnityEngine;
 [RequireComponent(typeof(PlayerInventory))]
 public class Interactor : MonoBehaviour
 {
-    private const float MaxRaycastDistance = 7f;
+    private const float MAX_RAYCAST_DISTANCE = 7f;
     private new Camera camera;
 
     private IInteractable active;
@@ -20,8 +20,7 @@ public class Interactor : MonoBehaviour
 
     private void Start()
     {
-        camera = GetComponentInChildren<Camera>();
-        if (camera == null) Debug.LogWarning($"Could not find {typeof(Camera)} component in children", this);
+        this.RequireComponentInChildren(out camera);
     }
 
     public void AddKeyListener(KeyCode key, Action action)
@@ -30,7 +29,7 @@ public class Interactor : MonoBehaviour
     }
     public void ClearListeners()
     {
-        actions.Clear();
+        actions?.Clear();
     }
 
     private void ResetActive(IInteractable interactable = null)
@@ -46,9 +45,9 @@ public class Interactor : MonoBehaviour
 
     public void Update()
     {
-        Vector3 CameraCenter = camera.ScreenToWorldPoint(new Vector3(Screen.width / 2, Screen.height / 2, camera.nearClipPlane));
-        Ray ray = new Ray(CameraCenter, camera.transform.forward);
-        if (Physics.Raycast(ray, out RaycastHit hit, MaxRaycastDistance))
+        Vector3 cameraCenter = camera.ScreenToWorldPoint(new Vector3(Screen.width / 2f, Screen.height / 2f, camera.nearClipPlane));
+        Ray ray = new Ray(cameraCenter, camera.transform.forward);
+        if (Physics.Raycast(ray, out RaycastHit hit, MAX_RAYCAST_DISTANCE))
         {
             GameObject go = hit.collider.gameObject;
 

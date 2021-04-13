@@ -63,7 +63,7 @@ namespace UnityTemplateProjects
 
         private void Awake()
         {
-            camera = GetComponentInChildren<Camera>();
+            this.RequireComponentInChildren(out camera);
         }
 
         void Update()

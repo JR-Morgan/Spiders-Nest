@@ -15,7 +15,7 @@ public class AOEDamage : MonoBehaviour
     }
     void OnTriggerEnter(Collider other)
     {
-        if(other.gameObject.TryGetComponentInParents(out Enemy enemy))
+        if(other.TryGetComponentInParents(out Enemy enemy))
         {
             enemies.Add(enemy);
             enemy.OnDeath.AddListener(OnDeath);
@@ -25,7 +25,7 @@ public class AOEDamage : MonoBehaviour
     }
     void OnTriggerExit(Collider other)
     {
-        if (other.gameObject.TryGetComponentInParents(out Enemy enemy))
+        if (other.TryGetComponentInParents(out Enemy enemy))
         {
             enemies.Remove(enemy);
         }

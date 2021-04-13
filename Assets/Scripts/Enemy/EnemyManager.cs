@@ -7,7 +7,7 @@ using UnityEngine.Events;
 
 public class EnemyManager : Singleton<EnemyManager>
 {
-    private const int DEFAULT_RESERVE_SIZE = 100;
+    private const int INITIAL_RESERVE_SIZE = 100;
 
     #region Serialised Fields
     [Header("Scene References")]
@@ -54,7 +54,7 @@ public class EnemyManager : Singleton<EnemyManager>
         {
             EnemyAgentFactory.Initialise(GameObject.FindGameObjectsWithTag("Player"));
 
-            int reservePoolSize = Mathf.Max(DEFAULT_RESERVE_SIZE - _enemies.Count, 0);
+            int reservePoolSize = Mathf.Max(INITIAL_RESERVE_SIZE - _enemies.Count, 0);
             reservePool = new List<Enemy>(reservePoolSize);
             for(int i = 0; i < reservePoolSize; i++)
             {
@@ -66,8 +66,11 @@ public class EnemyManager : Singleton<EnemyManager>
         
     }
 
+
+    #region Factory methods
+
     /// <summary>
-    /// Instantiates a new <see cref="GameObject"/> with an uninitialised <see cref="Enemy"/> component
+    /// Instantiates a new <see cref="GameObject"/> with an partially initialised <see cref="Enemy"/> component
     /// </summary>
     /// <returns></returns>
     private Enemy CreateNewEnemy()
@@ -87,9 +90,6 @@ public class EnemyManager : Singleton<EnemyManager>
         return enemy;
     }
 
-
-
-    #region Factory methods
     public Enemy GetInitialisedEnemy(Vector3 position, EnemyType type = 0) => GetInitialisedEnemy(position, Quaternion.identity, type);
     public Enemy GetInitialisedEnemy(Vector3 position, Quaternion rotation, EnemyType enemyType = 0)
     {
@@ -97,12 +97,12 @@ public class EnemyManager : Singleton<EnemyManager>
         if(reservePool.Count > 0)
         {
             enemy = reservePool[0];
-            reservePool.RemoveAt(0);
         }
         else
         {
             enemy = CreateNewEnemy();
         }
+        ActivateEnemy(enemy);
 
         enemy.transform.position = position;
         enemy.transform.rotation = rotation;
@@ -123,10 +123,15 @@ public class EnemyManager : Singleton<EnemyManager>
         set
         {
             _enemiesKilled = value;
-            OnChange.Invoke(_enemiesKilled);
+            OnEnemyKilled.Invoke(_enemiesKilled);
         }
     }
 
+    /// <summary>
+    /// Adds the enemy to the <see cref="ActivePool"/>, removing it from the reserve pool if necessary
+    /// </summary>
+    /// <param name="enemy"></param>
+    /// <returns>false if the <paramref name="enemy"/> was already in the <see cref="ActivePool"/></returns>
     public bool ActivateEnemy(Enemy enemy)
     {
         if (ActivePool.Contains(enemy)) return false;
@@ -139,26 +144,25 @@ public class EnemyManager : Singleton<EnemyManager>
     }
 
     /// <summary>
-    /// Tries to remove enemy active pool and add to 
+    /// Removes the <paramref name="enemy"/> from the active pool and adds to the <see cref="reservePool"/>
     /// </summary>
     /// <param name="enemy"></param>
-    /// <returns></returns>
+    /// <returns>false if the <paramref name="enemy"/> was not in the <see cref="ActivePool"/></returns>
     public bool RetireEnemy(Enemy enemy)
     {
         if (ActivePool.Remove(enemy))
         {
             reservePool.Add(enemy);
             enemy.gameObject.SetActive(false);
-            EnemiesKilled++;
             return true;
         }
         return false;
     }
 
-    public UnityEvent<int> OnChange;
+    public UnityEvent<int> OnEnemyKilled;
 
-
-    private int offset;
+    #region Updates
+    private int updateOffset;
     public void Update()
     {
         int amountToUpdate = (int)(ActivePool.Count * updateProportion);
@@ -167,13 +171,14 @@ public class EnemyManager : Singleton<EnemyManager>
             int counter = 0;
             while(counter++ != amountToUpdate && ActivePool.Count > counter)
             {
-                Enemy enemy = ActivePool[(counter + offset) % ActivePool.Count];
+                Enemy enemy = ActivePool[(counter + updateOffset) % ActivePool.Count];
                 enemy.Tick();
             }
 
-            offset += counter;
+            updateOffset += counter;
         }
     }
+    #endregion
 
 
     #region Evolution

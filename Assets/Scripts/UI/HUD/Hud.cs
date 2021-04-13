@@ -11,9 +11,9 @@ public class Hud : VisualElement
         score = this.Q<TextField>("Score");
         score.Q("unity-text-input").pickingMode = PickingMode.Ignore;
 
-        if (EnemyManager.Instance != null)
+        if (EnemyManager.TryGetInstance(out EnemyManager enemyManager))
         {
-            EnemyManager.Instance.OnChange.AddListener(Update);
+            enemyManager.OnEnemyKilled.AddListener(Update);
         }
 
         Update(0);

@@ -64,15 +64,6 @@ public class Enemy : MonoBehaviour
     public void Initialise(EnemyTypeData enemyData) => Initialise(enemyData, enemyData.maxHealth);
 
 
-    public void OnEnable()
-    {
-        EnemyManager.Instance.ActivateEnemy(this);
-    }
-
-    public void OnDisable()
-    {
-        EnemyManager.Instance.RetireEnemy(this);
-    }
     #endregion
 
     #region Damage

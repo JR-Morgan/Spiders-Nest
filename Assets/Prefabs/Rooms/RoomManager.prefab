@@ -12,9 +12,9 @@ GameObject:
   - component: {fileID: 904167735375865884}
   - component: {fileID: 1656959554234493109}
   - component: {fileID: 7963741694751486713}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: RoomManager
-  m_TagString: Untagged
+  m_TagString: LevelManager
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -28,7 +28,7 @@ Transform:
   m_GameObject: {fileID: 1416011104485666812}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.5, y: 1.5, z: 1.5}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -90,5 +90,5 @@ MonoBehaviour:
   m_TileSize: 256
   m_OverrideVoxelSize: 0
   m_VoxelSize: 0.16666667
-  m_NavMeshData: {fileID: 0}
+  m_NavMeshData: {fileID: 23800000, guid: 14552ae5c69c43b4696f3812f52c61b6, type: 2}
   m_BuildHeightMesh: 0

@@ -5,9 +5,5 @@ using UnityEngine;
 [System.Obsolete]
 public class InteractionDisplay : MonoBehaviour
 {
-    public void Start()
-    {
-        
-    }
 
 }
