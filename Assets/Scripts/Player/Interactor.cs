@@ -42,7 +42,6 @@ public class Interactor : MonoBehaviour
         active = interactable;
     }
 
-
     public void Update()
     {
         Vector3 cameraCenter = camera.ScreenToWorldPoint(new Vector3(Screen.width / 2f, Screen.height / 2f, camera.nearClipPlane));

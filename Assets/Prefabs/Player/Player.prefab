@@ -51,7 +51,7 @@ Camera:
   m_NormalizedViewPortRect:
     serializedVersion: 2
     x: 0.8
-    y: 0.8
+    y: 0
     width: 0.2
     height: 0.2
   near clip plane: 0.3
@@ -252,7 +252,6 @@ GameObject:
   - component: {fileID: 5038286848510463701}
   - component: {fileID: 3843933732731681494}
   - component: {fileID: 1608191076171958786}
-  - component: {fileID: 1163936767}
   - component: {fileID: 5873837802340139594}
   m_Layer: 8
   m_Name: Player
@@ -376,22 +375,6 @@ MonoBehaviour:
   OnValueChange:
     m_PersistentCalls:
       m_Calls: []
---- !u!114 &1163936767
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1053978658133368307}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 79d3d961591ebf444bccc5d55aaac894, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  attackLayer:
-    serializedVersion: 2
-    m_Bits: 512
-  holePrefab: {fileID: 9199876460922002132, guid: 7520ddb8c967ea948aed47af53c0384c, type: 3}
 --- !u!114 &5873837802340139594
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -404,5 +387,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 19b8d112e9030534294b0108b81e7f32, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  trapPrefab: {fileID: 2113031354584333758, guid: 07ea46e17b4d9244a9feb41b65e68b3f, type: 3}
+  _activeAction: {fileID: 0}
   placeKey: 324
+  placingColor: {r: 1, g: 1, b: 1, a: 0.5019608}

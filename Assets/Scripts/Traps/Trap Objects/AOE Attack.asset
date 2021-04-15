@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1677f642a81f1c74fa1473a140cc6c3f, type: 3}
+  m_Name: AOE Attack
+  m_EditorClassIdentifier: 
+  actionName: AOE Attack
+  cost: 10
+  freeIfBankrupt: 1
+  placeable: 0
+  prefab: {fileID: 9199876460922002132, guid: 7520ddb8c967ea948aed47af53c0384c, type: 3}
+  icon: {fileID: 2800000, guid: ea25b407dff8ae14d950b2f2787423a5, type: 3}

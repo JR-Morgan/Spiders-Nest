@@ -865,6 +865,10 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 8
       objectReference: {fileID: 0}
+    - target: {fileID: 1053978657630042994, guid: 52c40e2a5e9fdb04c93acd69d5c585ae, type: 3}
+      propertyPath: m_NormalizedViewPortRect.x
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1053978657630042996, guid: 52c40e2a5e9fdb04c93acd69d5c585ae, type: 3}
       propertyPath: m_Layer
       value: 8
@@ -908,10 +912,6 @@ PrefabInstance:
     - target: {fileID: 5038286848510463701, guid: 52c40e2a5e9fdb04c93acd69d5c585ae, type: 3}
       propertyPath: m_Enabled
       value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5873837802340139594, guid: 52c40e2a5e9fdb04c93acd69d5c585ae, type: 3}
-      propertyPath: placeKey
-      value: 324
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 52c40e2a5e9fdb04c93acd69d5c585ae, type: 3}
@@ -6340,7 +6340,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 0405d628570fe05489bc9589f4f533ce, type: 2}
   updateProportion: 0.25
   _enemies: []
-  OnChange:
+  OnEnemyKilled:
     m_PersistentCalls:
       m_Calls: []
 --- !u!4 &937698060
@@ -7982,6 +7982,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1284216490}
   - component: {fileID: 1284216489}
+  - component: {fileID: 1284216491}
   m_Layer: 5
   m_Name: UIDocument
   m_TagString: Untagged
@@ -8019,6 +8020,26 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1284216491
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1284216488}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 77ddecc5015a49448a2e7cf93710bda2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  actions:
+  - {fileID: 11400000, guid: 7e2cc2bb0f3a04f489fd87d8243305ea, type: 2}
+  - {fileID: 11400000, guid: 424a05a22f08c284ea752b4e8579568c, type: 2}
+  - {fileID: 11400000, guid: 1e6f2c88be7189f4e8a2c4643a35ad63, type: 2}
+  activeIndex: 0
+  OnActiveChange:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1001 &1287506791
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -1,0 +1,9 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <ui:VisualElement name="Container" style="flex-direction: row-reverse; margin-left: 10px; margin-right: 10px; margin-top: 10px; margin-bottom: 10px;">
+        <ui:VisualElement name="Icon" style="width: 64px; height: 64px;" />
+        <ui:VisualElement style="align-items: center; justify-content: center; font-size: 22px;">
+            <ui:Label text="ActionName&#10;" display-tooltip-when-elided="true" name="ActionName" style="font-size: 18px;" />
+            <ui:Label text="Cost: XXX&#10;" display-tooltip-when-elided="true" name="ActionCost" style="font-size: 16px;" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

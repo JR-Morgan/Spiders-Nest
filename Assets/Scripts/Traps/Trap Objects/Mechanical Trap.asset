@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1677f642a81f1c74fa1473a140cc6c3f, type: 3}
+  m_Name: Mechanical Trap
+  m_EditorClassIdentifier: 
+  actionName: Mechanical Trap
+  cost: 50
+  freeIfBroke: 0
+  placeable: 1
+  prefab: {fileID: 2113031354584333758, guid: 07ea46e17b4d9244a9feb41b65e68b3f, type: 3}
+  icon: {fileID: 2800000, guid: 9b84ae3d0e537d749b0c5eebcd116808, type: 3}

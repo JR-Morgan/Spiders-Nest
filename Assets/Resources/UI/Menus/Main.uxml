@@ -5,4 +5,5 @@
         <ui:VisualElement name="Crosshair" style="background-image: url(&apos;/Assets/Sprites/Crosshair 1.png&apos;); width: 32px; height: 32px;" />
     </ui:VisualElement>
     <ui:VisualElement name="Root" style="flex-grow: 1;" />
+    <ui:VisualElement name="ActionContainer" style="top: 100px; bottom: 100px; position: absolute; right: 0;" />
 </ui:UXML>

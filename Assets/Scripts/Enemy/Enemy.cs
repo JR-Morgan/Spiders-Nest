@@ -44,6 +44,7 @@ public class Enemy : MonoBehaviour
     void Awake()
     {
         navAgent = GetComponent<NavMeshAgent>();
+        if (_enemyData != null) Initialise(_enemyData, health);
     }
 
     public void Initialise(EnemyTypeData enemyData, float health)
