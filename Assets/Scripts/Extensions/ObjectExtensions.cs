@@ -13,9 +13,9 @@ internal static class GameObjectExtension
             {
                 if (child != null) UnityEngine.Object.DestroyImmediate(child.gameObject);
             };
-    #else
-        GameObject.Destroy(child);
-    #endif
+#else
+        GameObject.Destroy(child.gameObject);
+#endif
         }
     }
     public static void DestroyChildren(this GameObject gameObject) => DestroyChildren(gameObject.transform);

@@ -4,10 +4,6 @@
         <ui:VisualElement>
             <ui:Label text="Veins of Hell" display-tooltip-when-elided="true" name="Title" style="font-size: 128px; -unity-text-align: upper-center;" />
         </ui:VisualElement>
-        <ui:VisualElement style="align-items: center; justify-content: center; flex-grow: 0; padding-top: 0; margin-top: 2%; margin-bottom: 2%;">
-            <OptionButton name="New" Label_Text="New Game" Is_Selected="false" />
-            <OptionButton name="Continue" Label_Text="Continue" Is_Selected="false" />
-            <OptionButton name="Options" Label_Text="Options" Is_Selected="false" />
-        </ui:VisualElement>
+        <ui:VisualElement name="OptionRoot" style="align-items: center; justify-content: center; flex-grow: 0; padding-top: 0; margin-top: 2%; margin-bottom: 2%;" />
     </ui:VisualElement>
 </ui:UXML>
