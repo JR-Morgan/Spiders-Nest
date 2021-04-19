@@ -35,6 +35,7 @@ public class PUNManager : MonoBehaviourPunCallbacks
         PhotonNetwork.Disconnect();
     }
 
+
     public bool JoinRoom(string roomID)
     {
         if (PhotonNetwork.IsConnected)
@@ -110,6 +111,13 @@ public class PUNManager : MonoBehaviourPunCallbacks
     {
         Debug.Log($"{typeof(PUNManager)} Disconnected from master\n{cause}", this);
         OnDisconnectedEvent.Invoke(cause);
+    }
+
+    public UnityEvent<Player> OnPlayerLeftRoomEvent;
+    public override void OnPlayerLeftRoom(Player otherPlayer)
+    {
+        Debug.Log($"{typeof(Player)} {otherPlayer.UserId} disconnected from room", this);
+        OnPlayerLeftRoomEvent.Invoke(otherPlayer);
     }
     #endregion
 }

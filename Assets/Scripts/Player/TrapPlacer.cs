@@ -1,3 +1,4 @@
+using Photon.Pun;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -27,6 +28,16 @@ public class TrapPlacer : MonoBehaviour
     private void Awake()
     {
         this.RequireComponentInChildren(out camera);
+
+        if (TryGetComponent(out PhotonView photonView))
+        {
+            if (!photonView.IsMine && PhotonNetwork.IsConnected)
+            {
+                Destroy(this);
+                Destroy(camera);
+                return;
+            }
+        }
     }
 
     private void Start()

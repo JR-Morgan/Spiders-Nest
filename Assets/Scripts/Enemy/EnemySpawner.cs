@@ -1,10 +1,11 @@
+using Photon.Pun;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
 [SelectionBase]
-public class EnemySpawner : MonoBehaviour
+public class EnemySpawner : MonoBehaviourPun
 {
     [SerializeField]
     private float startTime = 60;
@@ -22,12 +23,12 @@ public class EnemySpawner : MonoBehaviour
 
     private void Awake()
     {
-        camera = GameObject.FindGameObjectWithTag("Player").GetComponentInChildren<Camera>();
-        text = GetComponentInChildren<TextMeshPro>();
+        this.RequireComponentInChildren(out text);
     }
 
     private void Start()
     {
+        camera = PlayerManager.Instance.Local.GetComponentInChildren<Camera>();
         timeToSpawn = startTime;
     }
 
@@ -42,19 +43,24 @@ public class EnemySpawner : MonoBehaviour
         timeToSpawn -= Time.deltaTime;
         if(timeToSpawn <= 0)
         {
-            SpawnEnemys(spawnSize);
-            timeToSpawn = spawnTime;
+            if (PlayerManager.Instance.IsMaster)
+            {
+                if (PhotonNetwork.IsConnected) photonView.RPC(nameof(SpawnEnemys), RpcTarget.All, spawnSize);
+                else SpawnEnemys(spawnSize);
+            }
         }
-        text.text = ((int)timeToSpawn).ToString();
+        text.text = ((int)Mathf.Max(timeToSpawn, 0)).ToString();
         text.transform.eulerAngles = new Vector3(0f, camera.transform.eulerAngles.y, 0f);
     }
 
+    [PunRPC]
     private void SpawnEnemys(int size)
     {
-        for(int i = 0; i < size; i++)
+        for (int i = 0; i < size; i++)
         {
             EnemyManager.Instance.GetInitialisedEnemy(transform.position, Quaternion.identity);
         }
+        timeToSpawn = spawnTime;
     }
 
 }

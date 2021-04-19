@@ -4,6 +4,7 @@
     using UnityEngine.InputSystem.Controls;
 #endif
 
+using Photon.Pun;
 using UnityEngine;
 
 namespace UnityTemplateProjects
@@ -64,6 +65,20 @@ namespace UnityTemplateProjects
         private void Awake()
         {
             this.RequireComponentInChildren(out camera);
+
+            if (TryGetComponent(out PhotonView photonView))
+            {
+                if (!photonView.IsMine && PhotonNetwork.IsConnected)
+                {
+                    Destroy(this);
+                    foreach(Camera camera in GetComponentsInChildren<Camera>())
+                    {
+                        Destroy(camera.gameObject);
+                    }
+                    
+                    return;
+                }
+            }
         }
 
         void Update()

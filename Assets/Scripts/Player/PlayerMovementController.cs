@@ -1,3 +1,4 @@
+using Photon.Pun;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -13,6 +14,18 @@ public class PlayerMovementController : MonoBehaviour
     private void Awake()
     {
         controller = GetComponent<CharacterController>();
+
+        if(TryGetComponent(out PhotonView photonView))
+        {
+            if (!photonView.IsMine && PhotonNetwork.IsConnected)
+            {
+                Destroy(this);
+                Destroy(controller);
+                return;
+            }
+        }
+
+       
     }
 
 

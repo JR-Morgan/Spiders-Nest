@@ -1,7 +1,7 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "New Enemy Type", menuName = nameof(ScriptableObject) + "/" + nameof(EnemyTypeData), order = 1)]
-public class EnemyTypeData : ScriptableObject
+[CreateAssetMenu(fileName = "New Enemy Model", menuName = nameof(ScriptableObject) + "/" + nameof(EnemyModel), order = 1)]
+public class EnemyModel : ScriptableObject
 {
     public EnemyType typeID;
     public GameObject prefab;

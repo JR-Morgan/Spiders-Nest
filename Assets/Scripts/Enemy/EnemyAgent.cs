@@ -15,5 +15,6 @@ public class EnemyAgent
         {
             if (behaviours[i].Invoke(state).shouldTerminate) break;
         }
+
     }
 }

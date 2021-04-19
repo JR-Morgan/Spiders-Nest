@@ -10,9 +10,10 @@ public static class EnemyAgentFactory
 {
 
     private static List<Transform> players;
-    internal static void Initialise(IEnumerable<GameObject> gameObjects)
+
+    internal static void Initialise(IEnumerable<Component> players)
     {
-        players = gameObjects.Select(x => x.transform).ToList();
+        EnemyAgentFactory.players = players.Select(x => x.transform).ToList();
     }
 
     public static EnemyAgent CreateAgent(Enemy enemy, EnemyType enemyType, float timeOfEvolve) => new EnemyAgent(CreateBehaviours(enemy, enemyType, timeOfEvolve));

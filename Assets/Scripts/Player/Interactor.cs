@@ -1,3 +1,4 @@
+using Photon.Pun;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -16,12 +17,19 @@ public class Interactor : MonoBehaviour
     private void Awake()
     {
         actions = new Dictionary<KeyCode, Action>();
+        this.RequireComponentInChildren(out camera);
+
+        if (TryGetComponent(out PhotonView photonView))
+        {
+            if (!photonView.IsMine && PhotonNetwork.IsConnected)
+            {
+                Destroy(this);
+                Destroy(camera);
+                return;
+            }
+        }
     }
 
-    private void Start()
-    {
-        this.RequireComponentInChildren(out camera);
-    }
 
     public void AddKeyListener(KeyCode key, Action action)
     {
