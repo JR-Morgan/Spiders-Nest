@@ -5,7 +5,11 @@ using System.Linq;
 using System.Reflection;
 using UnityEngine;
 
-public abstract class ObservableMonoBehaviour<T> : MonoBehaviourPun, IPunObservable where T : Component
+/// <summary>
+/// Properties of subclasses with the <see cref="ObservedAttribute"/> will be synced with PUN clients
+/// </summary>
+/// <typeparam name="T"></typeparam>
+public abstract class ObservableMonoBehaviour<T> : MonoBehaviourPun, IPunObservable where T : ObservableMonoBehaviour<T>
 {
 
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
@@ -28,8 +32,13 @@ public abstract class ObservableMonoBehaviour<T> : MonoBehaviourPun, IPunObserva
     }
 }
 
+/// <summary>
+/// Add this <see cref="Attribute"/> to Properties that should be synced through <see cref="IPunObservable"/><br/>
+/// Ensure property has both a getter and setter
+/// </summary>
+/// <remarks>
+/// See <see cref="ObservableMonoBehaviour{t}"/>
+/// </remarks>
 [AttributeUsage(AttributeTargets.Property, Inherited = false)]
 public class ObservedAttribute : Attribute
-{
-
-}
+{ }

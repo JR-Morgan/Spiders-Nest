@@ -41,24 +41,19 @@ public class EnemySpawner : MonoBehaviourPun
     private void Update()
     {
         timeToSpawn -= Time.deltaTime;
-        if(timeToSpawn <= 0)
+        if(timeToSpawn <= 0 && PlayerManager.Instance.IsMasterOrOffline)
         {
-            if (PlayerManager.Instance.IsMaster)
-            {
-                if (PhotonNetwork.IsConnected) photonView.RPC(nameof(SpawnEnemys), RpcTarget.All, spawnSize);
-                else SpawnEnemys(spawnSize);
-            }
+            SpawnEnemys(spawnSize);
         }
         text.text = ((int)Mathf.Max(timeToSpawn, 0)).ToString();
         text.transform.eulerAngles = new Vector3(0f, camera.transform.eulerAngles.y, 0f);
     }
 
-    [PunRPC]
     private void SpawnEnemys(int size)
     {
         for (int i = 0; i < size; i++)
         {
-            EnemyManager.Instance.GetInitialisedEnemy(transform.position, Quaternion.identity);
+            EnemyManager.Instance.CreateEnemy(transform.position);
         }
         timeToSpawn = spawnTime;
     }

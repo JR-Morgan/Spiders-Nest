@@ -1,209 +1,143 @@
 using Photon.Pun;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.AI;
 using UnityEngine.Events;
 
+/// <summary>
+/// The <see cref="EnemyManager"/> singleton manages the updating of <see cref="Enemy"/> components.
+/// Each <see cref="Update"/>, A specified proportion  (see <see cref="updateProportion"/>) of <see cref="Enemies"/>
+/// are updated through <see cref="Enemy.Tick"/><br/>
+/// </summary>
 public class EnemyManager : Singleton<EnemyManager>
 {
-    private const int INITIAL_RESERVE_SIZE = 100;
-
     #region Serialised Fields
     [Header("Prefab References")]
     [SerializeField]
+    [Tooltip("Reference to the " + nameof(Enemy) + " prefab to be instantiated. Note, prefab must have an " + nameof(Enemy) + " " + nameof(Component))]
     private GameObject enemyPrefab;
 
     [Header("Scene References")]
     [SerializeField]
-    private Transform enemyParent;
-    [SerializeField]
+    [Tooltip("The layer that enemies should be apart of once registered")]
     private LayerMask enemyLayer;
 
     [Header("Evolution Settings")]
-
     [SerializeField]
-    private EnemyModel[] enemyData;
+    [Tooltip("Specify evolution order of " + nameof(EnemyModel) + ".\nensure list ordered such that element 0 is the initial state and " + nameof(EnemyType) + " matches the " + nameof(EnemyModel.typeID))]
+    private EnemyModel[] enemyModels;
 
     [Header("Settings")]
+    [SerializeField]
     [Range(0f, 1f)]
-    [SerializeField]
+    [Tooltip("The proportion of enemies to be updated each "+ nameof(Update) +"(). Lower values increase performance but can lead to enemies that are slow to respond")]
     private float updateProportion;
-
-    [SerializeField]
-    private List<Enemy> _enemies, reservePool;
     #endregion
 
-    public List<Enemy> ActivePool => _enemies;
+    /// <summary>
+    /// A list of all active (i.e. alive) <see cref="Enemy"/> instances managed by the <see cref="EnemyManager"/>
+    /// </summary>
+    public List<Enemy> Enemies { get; private set; }
+
+    /// <param name="enemyType">The specified <see cref="EnemyType"/></param>
+    /// <returns>The <see cref="EnemyModel"/> with the <see cref="EnemyModel.typeID"/> specified</returns>
+    public EnemyModel GetModel(EnemyType enemyType) => enemyModels[(int)enemyType];
 
     protected override void Awake()
     {
         base.Awake();
 
-        if(_enemies == null) _enemies = new List<Enemy>();
+        RegisterEnemiesInScene();
 
         //Enemy Types Validation
         {
-            if (enemyData.Length < Enum.GetNames(typeof(EnemyType)).Length) Debug.LogWarning($"{nameof(enemyData)} is missing some {typeof(EnemyType)}s", this);
-            for (int i = 0; i < enemyData.Length; i++)
+            if (enemyModels.Length < Enum.GetNames(typeof(EnemyType)).Length) Debug.LogWarning($"{nameof(enemyModels)} is missing some {typeof(EnemyType)}s", this);
+            for (int i = 0; i < enemyModels.Length; i++)
             {
-                if ((int)enemyData[i].typeID != i) Debug.LogWarning($"Mismatch between {typeof(EnemyType)} and index in {nameof(enemyData)} at index {i}\n({enemyData[i]}) is id {(int)enemyData[i].typeID}", this);
-                if (enemyData[i].movementSpeed <= 0) Debug.LogWarning($"{ nameof(EnemyModel.movementSpeed)} at index {i}\n({enemyData[i]}) was <= zero (was this intentional?)", this);
+                Debug.Assert((int)enemyModels[i].typeID == i , $"Mismatch between {typeof(EnemyType)} and index in {nameof(enemyModels)} at index {i}\n({enemyModels[i]}) is id {(int)enemyModels[i].typeID}", this);
+                Debug.Assert(enemyModels[i].movementSpeed > 0, $"{ nameof(EnemyModel.movementSpeed)} at index {i}\n({enemyModels[i]}) was <= zero (was this intentional?)", this);
             }
         }
     }
-
-    public void Initialise()
-    {
-        //Enemy Initialisation
-        if (PlayerManager.Instance.IsMaster)
-        {
-            int reservePoolSize = Mathf.Max(INITIAL_RESERVE_SIZE - _enemies.Count, 0);
-            reservePool = new List<Enemy>(reservePoolSize);
-            for (int i = 0; i < reservePoolSize; i++)
-            {
-                Enemy enemy = CreateNewEnemy();
-                reservePool.Add(enemy);
-            }
-        }
-        else
-        {
-            enabled = false; //Disable update loop
-            Invoke(nameof(AddEnemiesInScene), 2f); //Small delay to allow time for network instantiations.
-        }
-    }
-
-    private void AddEnemiesInScene()
-    {
-        List<Enemy> active = new List<Enemy>(), inactive = new List<Enemy>();
-        foreach (Enemy enemy in Resources.FindObjectsOfTypeAll(typeof(Enemy)))
-        {
-            if (enemy.gameObject.activeInHierarchy)
-            {
-                active.Add(enemy);
-            }
-            else
-            {
-                inactive.Add(enemy);
-            }
-        }
-        _enemies = active;
-        reservePool = inactive;
-    }
-    #region Factory methods
-
-
 
     /// <summary>
-    /// Instantiates a new <see cref="GameObject"/> with an partially initialised <see cref="Enemy"/> component
+    /// Clears <see cref="Enemies"/> list and searches scene for any <see cref="Enemy"/> instances.
     /// </summary>
-    /// <returns></returns>
-    private Enemy CreateNewEnemy()
+    private void RegisterEnemiesInScene()
     {
-        GameObject enemyObject;
+        if (Enemies == null) Enemies = new List<Enemy>();
+        else Enemies.Clear();
 
-        if (PhotonNetwork.IsConnected)
-            enemyObject = PhotonNetwork.Instantiate($"Prefabs/Enemy/{enemyPrefab.name}", Vector3.zero, Quaternion.identity);
+        foreach (Enemy enemy in FindObjectsOfType<Enemy>())
+        {
+            Enemies.Add(enemy);
+            if (!enemy.IsInitialised) enemy.EnemyModel = enemyModels[0];
+        }
+    }
+
+    /// <summary>
+    /// Removes <paramref name="enemy"/> from the <see cref="EnemyManager.Enemies"/> list.
+    /// </summary>
+    /// <param name="enemy">The <see cref="Enemy"/> to be registered</param>
+    public void RegisterEnemy(Enemy enemy)
+    {
+        if (Enemies.Contains(enemy)) return;
+
+        Enemies.Add(enemy);
+    }
+
+    /// <summary>
+    /// Removes the <paramref name="enemy"/> from the <see cref="EnemyManager.Enemies"/> list.
+    /// </summary>
+    /// <param name="enemy">The <see cref="Enemy"/> to be unregistered</param>
+    /// <returns>
+    /// <c>true</c> if the <paramref name="enemy"/> was successfully remove; otherwise, <c>false</c>.<br/>
+    /// Also returns <c>false</c> if <paramref name="enemy"/> was not found in the <see cref="Enemies"/> list.
+    /// </returns>
+    public bool UnregisterEnemy(Enemy enemy) => Enemies.Remove(enemy);
+
+
+    #region Factory methods
+
+    public bool CreateEnemy(Vector3 position, EnemyType enemyType = default) => CreateEnemy(position, Quaternion.identity, enemyType);
+    public bool CreateEnemy(Vector3 position, Quaternion rotation, EnemyType enemyType = default)
+    {
+        GameObject enemyGameObject;
+        if (!PhotonNetwork.IsConnected)
+        {
+            enemyGameObject = Instantiate(enemyPrefab, position, rotation);
+        }
+        else if(PhotonNetwork.IsMasterClient)
+        {
+            enemyGameObject = PhotonNetwork.Instantiate($"Prefabs/Enemy/{enemyPrefab.name}", position, rotation);
+        }
         else
-            enemyObject = Instantiate(enemyPrefab);
-
-
-        enemyObject.layer = enemyLayer.ToLayerNumber();
-        enemyObject.SetActive(false);
-
-        Enemy enemy = enemyObject.GetComponent<Enemy>();
-        enemy.OnDeath.AddListener(() => {
-            if (!RetireEnemy(enemy)) Debug.LogWarning($"{typeof(Enemy)} died but could not be removed from {typeof(EnemyManager)}", enemy);
-        });
-
-        return enemy;
+        {
+            return false;
+        }
+        enemyGameObject.layer = enemyLayer.ToLayerNumber();
+        Enemy enemy = enemyGameObject.GetComponent<Enemy>();
+        enemy.ModelType = enemyType;
+        return true;
     }
 
-    public void GetInitialisedEnemy(Vector3 position, EnemyType type = 0) => GetInitialisedEnemy(position, Quaternion.identity, type);
-    public void GetInitialisedEnemy(Vector3 position, Quaternion rotation, EnemyType enemyType = 0)
-    {
-
-        Enemy enemy;
-        if(reservePool.Count > 0)
-        {
-            enemy = reservePool[0];
-        }
-        else 
-        {
-            if (!PlayerManager.Instance.IsMaster) return;
-            enemy = CreateNewEnemy();
-        }
-        ActivateEnemy(enemy);
-
-        enemy.transform.position = position;
-        enemy.transform.rotation = rotation;
-
-        ReinitialiseWithType(enemy, enemyType);
-
-        enemy.gameObject.SetActive(true);
-    }
     #endregion
 
 
 
-    private int _enemiesKilled = 0;
-
-    private int EnemiesKilled
-    {
-        get => _enemiesKilled;
-        set
-        {
-            _enemiesKilled = value;
-            OnEnemyKilled.Invoke(_enemiesKilled);
-        }
-    }
-
-    /// <summary>
-    /// Adds the enemy to the <see cref="ActivePool"/>, removing it from the reserve pool if necessary
-    /// </summary>
-    /// <param name="enemy"></param>
-    /// <returns>false if the <paramref name="enemy"/> was already in the <see cref="ActivePool"/></returns>
-    public bool ActivateEnemy(Enemy enemy)
-    {
-        if (ActivePool.Contains(enemy)) return false;
-        if (reservePool.Contains(enemy))
-        {
-            reservePool.Remove(enemy);
-        }
-        ActivePool.Add(enemy);
-        return true;
-    }
-
-    /// <summary>
-    /// Removes the <paramref name="enemy"/> from the active pool and adds to the <see cref="reservePool"/>
-    /// </summary>
-    /// <param name="enemy"></param>
-    /// <returns>false if the <paramref name="enemy"/> was not in the <see cref="ActivePool"/></returns>
-    public bool RetireEnemy(Enemy enemy)
-    {
-        if (ActivePool.Remove(enemy))
-        {
-            reservePool.Add(enemy);
-            enemy.gameObject.SetActive(false);
-            return true;
-        }
-        return false;
-    }
-
-    public UnityEvent<int> OnEnemyKilled;
-
     #region Updates
+
     private int updateOffset;
+
     public void Update()
     {
-        int amountToUpdate = (int)(ActivePool.Count * updateProportion);
-        if (ActivePool.Count > 0)
+        int amountToUpdate = (int)(Enemies.Count * updateProportion);
+        if (Enemies.Count > 0)
         {
             int counter = 0;
-            while(counter++ != amountToUpdate && ActivePool.Count > counter)
+            while(counter++ != amountToUpdate && Enemies.Count > counter)
             {
-                Enemy enemy = ActivePool[(counter + updateOffset) % ActivePool.Count];
+                Enemy enemy = Enemies[(counter + updateOffset) % Enemies.Count];
                 enemy.Tick();
             }
 
@@ -218,7 +152,7 @@ public class EnemyManager : Singleton<EnemyManager>
 
     public void ReinitialiseWithType(Enemy enemy, EnemyType enemyType)
     {
-        enemy.Initialise(enemyData[(int)enemyType]);
+        enemy.EnemyModel = enemyModels[(int)enemyType];
     }
 
     public bool Evolve(Enemy enemy)

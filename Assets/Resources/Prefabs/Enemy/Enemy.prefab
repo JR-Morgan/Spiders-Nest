@@ -125,7 +125,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2d7c91e33025f7847b8a7a76b8cb75fb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  model: {fileID: 0}
+  _model: {fileID: 0}
   _health: 0
   _goal: {fileID: 0}
   OnDeath:

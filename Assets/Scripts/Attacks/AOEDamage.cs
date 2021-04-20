@@ -21,7 +21,7 @@ public class AOEDamage : MonoBehaviour
             enemy.OnDeath.AddListener(OnDeath);
         }
 
-        void OnDeath() => enemies.Remove(enemy);
+        void OnDeath(Enemy e) => enemies.Remove(e);
     }
     void OnTriggerExit(Collider other)
     {

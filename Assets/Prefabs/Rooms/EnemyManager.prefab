@@ -43,17 +43,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c01c832e8fc3d5b4e9f0d05910b2a20e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enemyParent: {fileID: 730638622469935459}
+  enemyPrefab: {fileID: 751437156892078535, guid: cfdcd30a918e5114c81f07b14516285c, type: 3}
   enemyLayer:
     serializedVersion: 2
     m_Bits: 128
-  enemyData:
+  enemyModels:
   - {fileID: 11400000, guid: 1a8d4fe4adf0d904c90554e92a88b724, type: 2}
   - {fileID: 11400000, guid: ab8ea4fbe54064f469965dcd5640d8a9, type: 2}
   - {fileID: 11400000, guid: ad830e5bc39487f479e4032ad7f563de, type: 2}
   - {fileID: 11400000, guid: 0405d628570fe05489bc9589f4f533ce, type: 2}
   updateProportion: 0.25
-  _enemies: []
-  OnEnemyKilled:
-    m_PersistentCalls:
-      m_Calls: []

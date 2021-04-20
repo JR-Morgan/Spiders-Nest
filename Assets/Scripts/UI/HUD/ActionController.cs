@@ -16,7 +16,7 @@ public class ActionController : Singleton<ActionController>
     [SerializeField]
     private int activeIndex;
 
-    private ActionType Active => actions[Mathf.Abs(activeIndex % actions.Count)];
+    public ActionType Active => actions[Mathf.Abs(activeIndex % actions.Count)];
 
     private Dictionary<ActionType, ActionElement> elementOfType;
 

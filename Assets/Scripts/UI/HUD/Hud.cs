@@ -13,7 +13,8 @@ public class Hud : VisualElement
 
         if (EnemyManager.TryGetInstance(out EnemyManager enemyManager))
         {
-            enemyManager.OnEnemyKilled.AddListener(Update);
+            //TODO
+            //enemyManager.OnEnemyKilled.AddListener(Update);
         }
 
         Update(0);

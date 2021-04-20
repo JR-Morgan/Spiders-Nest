@@ -1,7 +1,3 @@
-using Photon.Pun;
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.Events;
@@ -15,7 +11,7 @@ public class Enemy : ObservableMonoBehaviour<Enemy>
 
     #region Serialised Fields
     [SerializeField]
-    private EnemyModel model;
+    private EnemyModel _model;
     [SerializeField]
     private float _health;
     [SerializeField]
@@ -23,55 +19,84 @@ public class Enemy : ObservableMonoBehaviour<Enemy>
     #endregion
 
     #region Properties
-    public float MaxHealth => model.maxHealth;
+
     [Observed]
     public float Health { get => _health; set => _health = value; }
-    //[Observed]
-    public EnemyModel EnemyModel { get => model; set => model = value; }
+    public float MaxHealth => EnemyModel.maxHealth;
 
     public Transform Goal { get => _goal; set => _goal = value; }
 
+    [Observed]
     public float SpeedProportion
     {
-        get => navAgent.speed / model.movementSpeed;
-        set => navAgent.speed = model.movementSpeed * value;
+        get => navAgent.speed / EnemyModel.movementSpeed;
+        set => navAgent.speed = EnemyModel.movementSpeed * value;
     }
 
-    #endregion
 
     #region Initialisation
 
-    void Awake()
+    /// <summary><c>true</c> if <see cref="EnemyModel"/> has been initialised (i.e. not <c>null</c>)</summary>
+    public bool IsInitialised => EnemyModel == null;
+
+    [Observed]
+    public EnemyType ModelType
     {
-        navAgent = GetComponent<NavMeshAgent>();
-        if (model != null) Initialise(model, _health);
+        get => EnemyModel.typeID;
+        set 
+        {
+            EnemyModel = EnemyManager.Instance.GetModel(value);
+        }
+    }
+    public EnemyModel EnemyModel
+    {
+        get => _model;
+        set
+        {
+            _model = value;
+            Initialise(_model, _model.maxHealth); //Reinitialise to new model with max health
+        }
     }
 
-    
-
-    public void Initialise(EnemyModel enemyData) => Initialise(enemyData, enemyData.maxHealth);
-    public void Initialise(EnemyModel enemyData, float health)
+    private void Initialise(EnemyModel enemyData, float health)
     {
-        this.model = enemyData;
         this._health = health;
         this.navAgent.speed = enemyData.movementSpeed;
 
         transform.DestroyChildren();
         Instantiate(enemyData.prefab, transform);
-        
+
 
         float timeOfEvolve = 0f; ;
 
-        if (PlayerManager.Instance.IsMaster)
+        if (PlayerManager.Instance.IsMasterOrOffline)
         {
-            timeOfEvolve = UnityEngine.Random.value < EnemyModel.proababiltyToEvolve ? Time.time + enemyData.timeUntilEvolve : - 1; //TODO add some small variation
+            timeOfEvolve = UnityEngine.Random.value < EnemyModel.proababiltyToEvolve ? Time.time + enemyData.timeUntilEvolve : -1; //TODO add some small variation
         }
 
         agent = EnemyAgentFactory.CreateAgent(this, enemyData.typeID, timeOfEvolve);
 
     }
 
+    #endregion
 
+    #endregion
+
+    #region Unity Methods
+    int sinceStart;
+    public void Awake()
+    {
+        navAgent = GetComponent<NavMeshAgent>();
+        if (_model != null) EnemyModel = _model;
+        else ModelType = default;
+        sinceStart++;
+    }
+
+    public void Start()
+    {
+        EnemyManager.Instance.RegisterEnemy(this);
+        sinceStart++;
+    }
 
     #endregion
 
@@ -85,10 +110,13 @@ public class Enemy : ObservableMonoBehaviour<Enemy>
         }
     }
 
-    public UnityEvent OnDeath = new UnityEvent();
+    public UnityEvent<Enemy> OnDeath;
     public void Die()
     {
-        OnDeath.Invoke();
+        EnemyManager.Instance.UnregisterEnemy(this);
+        OnDeath.Invoke(this);
+
+        Destroy(this.gameObject);
     }
     #endregion
 
@@ -96,6 +124,11 @@ public class Enemy : ObservableMonoBehaviour<Enemy>
     private EnemyAgent agent;
     public bool Tick()
     {
+        if (navAgent == null)
+        {
+            Debug.LogWarning(sinceStart);
+            return false;
+        }
         if (!navAgent.isOnNavMesh) return false;
 
         agent.Act();

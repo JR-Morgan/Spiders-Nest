@@ -13,10 +13,9 @@ public class PlayerManager : Singleton<PlayerManager>
     public NetworkPlayer Local => PhotonNetwork.IsConnected? AllPlayers[LocalPlayer] : _offline;
     public Player MasterPlayer { get; private set; }
     public NetworkPlayer Master => PhotonNetwork.IsConnected? AllPlayers[MasterPlayer] : _offline;
-    public bool IsMaster
-    {
-        get
-        {
+
+    public bool IsMasterOrOffline {
+        get {
             Debug.Assert(((LocalPlayer == MasterPlayer) == PhotonNetwork.IsMasterClient) || !PhotonNetwork.IsConnected);
             return PhotonNetwork.IsMasterClient || !PhotonNetwork.IsConnected;
         }
@@ -24,19 +23,15 @@ public class PlayerManager : Singleton<PlayerManager>
 
     public void RegisterNetworkPlayer(NetworkPlayer newPlayer)
     {
-        bool firstPlayer;
         if (PhotonNetwork.IsConnected)
         {
-            firstPlayer = newPlayer.PhotonView.Owner.IsMasterClient && PhotonNetwork.IsMasterClient;
             UpdateAllClients();
         }
         else
         {
-            firstPlayer = _offline == null;
             _offline = newPlayer;
             UpdatePlayerReferences(newPlayer);
         }
-        if (firstPlayer) EnemyManager.Instance.Initialise();
     }
 
     private void UpdatePlayerReferences(params NetworkPlayer[] players) => UpdatePlayerReferences((IList<NetworkPlayer>)players);

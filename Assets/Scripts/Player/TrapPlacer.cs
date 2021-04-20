@@ -43,6 +43,7 @@ public class TrapPlacer : MonoBehaviour
     private void Start()
     {
         ActionController.Instance.OnActiveChange.AddListener(a => ActiveAction = a);
+        ActiveAction = ActionController.Instance.Active;
     }
 
 
