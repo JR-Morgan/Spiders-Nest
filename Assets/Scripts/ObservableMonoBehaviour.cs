@@ -11,15 +11,20 @@ using UnityEngine;
 /// <typeparam name="T"></typeparam>
 public abstract class ObservableMonoBehaviour<T> : MonoBehaviourPun, IPunObservable where T : ObservableMonoBehaviour<T>
 {
+    /// <summary><c>true</c> if this object should sync properties</summary>
+    protected bool isSending = true;
 
-    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+    public virtual void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
     {
         IEnumerable<PropertyInfo> properties = typeof(T).GetProperties().Where(p => p.IsDefined(typeof(ObservedAttribute)));
         if (stream.IsWriting)
         {
-            foreach(PropertyInfo property in properties)
+            if (isSending)
             {
-                stream.SendNext(property.GetValue(this));
+                foreach(PropertyInfo property in properties)
+                {
+                    stream.SendNext(property.GetValue(this));
+                }
             }
         }
         else
@@ -30,6 +35,7 @@ public abstract class ObservableMonoBehaviour<T> : MonoBehaviourPun, IPunObserva
             }
         }
     }
+
 }
 
 /// <summary>

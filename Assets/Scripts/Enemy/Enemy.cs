@@ -26,6 +26,7 @@ public class Enemy : ObservableMonoBehaviour<Enemy>
 
     public Transform Goal { get => _goal; set => _goal = value; }
 
+    /// <summary>The speed of the <see cref="NavMeshAgent"/> proportionate to its base speed</summary>
     [Observed]
     public float SpeedProportion
     {
@@ -45,7 +46,8 @@ public class Enemy : ObservableMonoBehaviour<Enemy>
         get => EnemyModel.typeID;
         set 
         {
-            EnemyModel = EnemyManager.Instance.GetModel(value);
+            if(EnemyModel == null || EnemyModel.typeID != value)
+                EnemyModel = EnemyManager.Instance.GetModel(value);
         }
     }
     public EnemyModel EnemyModel
@@ -69,7 +71,7 @@ public class Enemy : ObservableMonoBehaviour<Enemy>
 
         float timeOfEvolve = 0f; ;
 
-        if (PlayerManager.Instance.IsMasterOrOffline)
+        if (PlayerManager.IsMasterOrOffline)
         {
             timeOfEvolve = UnityEngine.Random.value < EnemyModel.proababiltyToEvolve ? Time.time + enemyData.timeUntilEvolve : -1; //TODO add some small variation
         }
@@ -83,30 +85,31 @@ public class Enemy : ObservableMonoBehaviour<Enemy>
     #endregion
 
     #region Unity Methods
-    int sinceStart;
     public void Awake()
     {
         navAgent = GetComponent<NavMeshAgent>();
         if (_model != null) EnemyModel = _model;
         else ModelType = default;
-        sinceStart++;
     }
 
     public void Start()
     {
         EnemyManager.Instance.RegisterEnemy(this);
-        sinceStart++;
     }
 
     #endregion
 
     #region Damage
-    public void AddDamage(float damage)
+    public void AddDamage(float damage, NetworkPlayer hitBy)
     {
         _health -= damage;
         if (_health <= 0)
         {
-            Invoke(nameof(Die), 0.00001f);
+            if (hitBy.TryGetComponent(out PlayerInventory inventory))
+            {
+                inventory.AddUnchecked(5 * (int)ModelType + 10);
+            }
+            Invoke(nameof(Die), 0.001f); //Small delay to destroy on next frame
         }
     }
 
@@ -122,13 +125,12 @@ public class Enemy : ObservableMonoBehaviour<Enemy>
 
     #region Enemy Behaviour
     private EnemyAgent agent;
+    /// <summary>
+    /// Updates the <see cref="Enemy"/> through <see cref=""/>
+    /// </summary>
+    /// <returns><c>false</c> if the <see cref="Enemy"/> was unable to update; otherwise, <c>false</c></returns>
     public bool Tick()
     {
-        if (navAgent == null)
-        {
-            Debug.LogWarning(sinceStart);
-            return false;
-        }
         if (!navAgent.isOnNavMesh) return false;
 
         agent.Act();

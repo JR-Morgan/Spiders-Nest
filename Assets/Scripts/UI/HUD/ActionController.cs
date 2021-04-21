@@ -27,6 +27,7 @@ public class ActionController : Singleton<ActionController>
         elementOfType = new Dictionary<ActionType, ActionElement>();
         root = GetComponent<UIDocument>().rootVisualElement.Q("ActionContainer");
 
+        //Action setup
         if(actions.Count > 0)
         {
             foreach (ActionType a in actions)
@@ -49,6 +50,19 @@ public class ActionController : Singleton<ActionController>
             Debug.LogWarning($"{nameof(actions)} was empty", this);
         }
 
+
+        //Money Setup
+        PlayerInventory inventory = PlayerManager.Instance.Local.GetComponent<PlayerInventory>();
+        inventory.OnValueChange.AddListener(e => CheckCanAfford(inventory));
+        CheckCanAfford(inventory);
+    }
+
+    private void CheckCanAfford(PlayerInventory inventory)
+    {
+        foreach (ActionType action in elementOfType.Keys)
+        {
+            elementOfType[action].Can_Afford = inventory.CanAfford(action);
+        }
     }
 
     private void Update()

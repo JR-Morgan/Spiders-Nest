@@ -72,7 +72,7 @@ public class Interactor : MonoBehaviour
                     {
                         if (Input.GetKeyDown(kvp.Key))
                         {
-                            kvp.Value();
+                            kvp.Value.Invoke();
                         }
                     }
                 }

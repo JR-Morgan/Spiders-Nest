@@ -172,6 +172,9 @@ MonoBehaviour:
   OnDisconnectedEvent:
     m_PersistentCalls:
       m_Calls: []
+  OnPlayerLeftRoomEvent:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!4 &403472375
 Transform:
   m_ObjectHideFlags: 0

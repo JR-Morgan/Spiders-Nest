@@ -1,7 +1,8 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Encapsulates an animated trap that has a modulated duty cycle
+/// </summary>
 [SelectionBase]
 [RequireComponent(typeof(AOEDamage))]
 public class BasicTrap : MonoBehaviour
@@ -32,7 +33,7 @@ public class BasicTrap : MonoBehaviour
         AnimationUpdate();
     }
 
-    void AnimationUpdate()
+    private void AnimationUpdate()
     {
         if (state > 1 / frequency) //If we should start the next cycle
         {

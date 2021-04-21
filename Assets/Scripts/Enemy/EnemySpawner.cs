@@ -41,7 +41,7 @@ public class EnemySpawner : MonoBehaviourPun
     private void Update()
     {
         timeToSpawn -= Time.deltaTime;
-        if(timeToSpawn <= 0 && PlayerManager.Instance.IsMasterOrOffline)
+        if(timeToSpawn <= 0 && PlayerManager.IsMasterOrOffline)
         {
             SpawnEnemys(spawnSize);
         }

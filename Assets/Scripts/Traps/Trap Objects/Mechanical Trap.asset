@@ -14,7 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   actionName: Mechanical Trap
   cost: 50
-  freeIfBroke: 0
-  placeable: 1
+  damage: 10
+  freeIfBankrupt: 0
+  isPlaceable: 1
   prefab: {fileID: 2113031354584333758, guid: 07ea46e17b4d9244a9feb41b65e68b3f, type: 3}
   icon: {fileID: 2800000, guid: 9b84ae3d0e537d749b0c5eebcd116808, type: 3}

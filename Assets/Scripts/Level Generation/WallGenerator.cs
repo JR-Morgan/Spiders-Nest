@@ -68,8 +68,8 @@ public static class WallGenerator
     }
 
     private static int Size(int radius) => radius * 2;
-    private static Vector3 RelativePosition(int radius, int x, int y) => new Vector3((x * NewLevelGenerator.INNER_RADIUS) + (Mathf.Abs(y - (radius - 1)) * (NewLevelGenerator.INNER_RADIUS / 2f)), 0f, (y + 1) * (NewLevelGenerator.OUTER_RADIUS / 2f) + y * (NewLevelGenerator.WALLSIZE / 2f));
+    private static Vector3 RelativePosition(int radius, int x, int y) => new Vector3((x * NewLevelGenerator.INNER_RADIUS) + (Mathf.Abs(y - (radius - 1)) * (NewLevelGenerator.INNER_RADIUS / 2f)), 0f, (y + 1) * (NewLevelGenerator.OUTER_RADIUS / 2f) + y * (NewLevelGenerator.Wall_Length / 2f));
 
-    private static Vector3 AbsoluteTransform(int radius, Vector3 localPosition) => localPosition - new Vector3((radius - 1) * NewLevelGenerator.INNER_RADIUS + NewLevelGenerator.INNER_RADIUS / 2f, 0f, ((radius - 1) * (NewLevelGenerator.OUTER_RADIUS - ((NewLevelGenerator.OUTER_RADIUS / 2) - (NewLevelGenerator.WALLSIZE / 2)))) + NewLevelGenerator.OUTER_RADIUS / 2);
+    private static Vector3 AbsoluteTransform(int radius, Vector3 localPosition) => localPosition - new Vector3((radius - 1) * NewLevelGenerator.INNER_RADIUS + NewLevelGenerator.INNER_RADIUS / 2f, 0f, ((radius - 1) * (NewLevelGenerator.OUTER_RADIUS - ((NewLevelGenerator.OUTER_RADIUS / 2) - (NewLevelGenerator.Wall_Length / 2)))) + NewLevelGenerator.OUTER_RADIUS / 2);
     private static Vector3 AbsolutePosition(int radius, int x, int y) => AbsoluteTransform(radius, RelativePosition(radius, x, y));
 }

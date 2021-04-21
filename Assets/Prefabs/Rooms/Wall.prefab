@@ -236,6 +236,8 @@ MonoBehaviour:
   - {fileID: 8787096386556540452}
   - {fileID: 5529749721282134316}
   _rooms: []
+  _x: 0
+  _y: 0
 --- !u!65 &1368710801857716386
 BoxCollider:
   m_ObjectHideFlags: 0

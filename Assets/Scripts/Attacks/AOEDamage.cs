@@ -5,14 +5,26 @@ using UnityEngine;
 public class AOEDamage : MonoBehaviour
 {
     [SerializeField]
-    private float Damage = 50;
+    private float _damage;
+
+    public float Damage
+    {
+        get => _damage;
+        set
+        {
+            _damage = value;
+            enabled = _damage > 0;
+        }
+    }
 
     private HashSet<Enemy> enemies = new HashSet<Enemy>();
 
     private void Start()
     {
         GetComponentInChildren<Renderer>(true).gameObject.SetActive(true);
+        //Damage = Damage; //Just to check if > 0
     }
+
     void OnTriggerEnter(Collider other)
     {
         if(other.TryGetComponentInParents(out Enemy enemy))
@@ -35,7 +47,7 @@ public class AOEDamage : MonoBehaviour
     {
         foreach(Enemy e in enemies)
         {
-            e.AddDamage(Damage * Time.deltaTime);
+            e.AddDamage(Damage * Time.deltaTime, PlayerManager.Instance.Local);
         }
     }
 }

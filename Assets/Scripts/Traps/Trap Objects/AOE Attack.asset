@@ -14,7 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   actionName: AOE Attack
   cost: 10
+  damage: 10
   freeIfBankrupt: 1
-  placeable: 0
+  isPlaceable: 0
   prefab: {fileID: 9199876460922002132, guid: 7520ddb8c967ea948aed47af53c0384c, type: 3}
   icon: {fileID: 2800000, guid: ea25b407dff8ae14d950b2f2787423a5, type: 3}

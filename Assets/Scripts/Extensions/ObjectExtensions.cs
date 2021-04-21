@@ -1,9 +1,16 @@
 ﻿using UnityEngine;
 
-
-internal static class GameObjectExtension
+/// <summary>
+/// This class contains several extension methods for <see cref="UnityEngine"/> classes.
+/// </summary>
+internal static class UnityEngineExtensions
 {
-    #region Destroy
+    #region Destroy GameObjects
+    /// <summary>
+    /// Destroys all children associated with the <paramref name="transform"/>.<br/>
+    /// Will call <see cref="Object.Destroy(Object)"/> at play time or if in editor; performs a delayed call to <see cref="Object.DestroyImmediate(Object)"/>
+    /// </summary>
+    /// <param name="transform">The <see cref="Transform"/> whose children are to be destroyed.</param>
     public static void DestroyChildren(this Transform transform)
     {
         foreach (Transform child in transform)
@@ -34,49 +41,44 @@ internal static class GameObjectExtension
         return component != null;
     }
 
-    public static bool TryGetComponentsInParents<T>(this Component source, out T[] components, bool includeInactive = DEFAULT_INCLUDE_INTERACTIVE) where T : Component => TryGetComponentsInParents(source.gameObject, out components, includeInactive);
-    public static bool TryGetComponentsInParents<T>(this GameObject gameObject, out T[] components, bool includeInactive = DEFAULT_INCLUDE_INTERACTIVE) where T : Component
-    {
-        components = gameObject.GetComponentsInParent<T>(includeInactive);
-        return components != null;
-    }
-
     public static bool TryGetComponentInChildren<T>(this Component source, out T component, bool includeInactive = DEFAULT_INCLUDE_INTERACTIVE) where T : Component => TryGetComponentInChildren(source.gameObject, out component, includeInactive);
     public static bool TryGetComponentInChildren<T>(this GameObject gameObject, out T component, bool includeInactive = DEFAULT_INCLUDE_INTERACTIVE) where T : Component
     {
         component = gameObject.GetComponentInChildren<T>(includeInactive);
         return component != null;
     }
-
-    public static bool TryGetComponentsInChildren<T>(this Component source, out T[] components, bool includeInactive = DEFAULT_INCLUDE_INTERACTIVE) where T : Component => TryGetComponentsInChildren(source.gameObject, out components, includeInactive);
-    public static bool TryGetComponentsInChildren<T>(this GameObject gameObject, out T[] components, bool includeInactive = DEFAULT_INCLUDE_INTERACTIVE) where T : Component
-    {
-        components = gameObject.GetComponentsInChildren<T>(includeInactive);
-        return components != null;
-    }
     #endregion
 
     #region Require Get
     /// <summary>
     /// Finds the first occurrence of <typeparamref name="T"/> in <paramref name="source"/> or children of.
-    /// Prints a warning to console if no <typeparamref name="T"/> were found.
+    /// Asserts if no <typeparamref name="T"/> were found.
     /// </summary>
     /// <typeparam name="T">The type of <see cref="Component"/></typeparam>
     /// <param name="source"></param>
-    /// <param name="component"></param>
-    /// <param name="includeInactive"></param>
+    /// <param name="component">The component to be assigned</param>
+    /// <param name="includeInactive">Whether to include inactive objects</param>
     /// <returns><c>true</c> if <paramref name="component"/> was assigned</returns>
     public static bool RequireComponentInChildren<T>(this Component source, out T component, bool includeInactive = false) where T : Component
     {
         bool found = TryGetComponentInChildren<T>(source, out component, includeInactive);
-        if (!found) Debug.LogWarning($"{source.GetType()} could not find any {typeof(T)} {nameof(component)} in self or children!", source);
+        Debug.Assert(found, $"{source.GetType()} could not find any {typeof(T)} {nameof(component)} in self or children!", source);
         return found;
     }
 
-    public static bool RequireComponentsInChildren<T>(this Component source, out T[] components, bool includeInactive = false) where T : Component
+    /// <summary>
+    /// Finds the first occurrence of <typeparamref name="T"/> in <paramref name="source"/> or parents.
+    /// Asserts if no <typeparamref name="T"/> were found.
+    /// </summary>
+    /// <typeparam name="T">The type of <see cref="Component"/></typeparam>
+    /// <param name="source"></param>
+    /// <param name="component">The component to be assigned</param>
+    /// <param name="includeInactive">Whether to include inactive objects</param>
+    /// <returns><c>true</c> if <paramref name="component"/> was assigned</returns>
+    public static bool RequireComponentInParents<T>(this Component source, out T component, bool includeInactive = false) where T : Component
     {
-        bool found = TryGetComponentsInChildren<T>(source, out components, includeInactive);
-        if (!found) Debug.LogWarning($"{source.GetType()} could not find any {typeof(T)} {nameof(components)} in self or children!", source); ;
+        bool found = TryGetComponentInParents<T>(source, out component, includeInactive);
+        Debug.Assert(found, $"{source.GetType()} could not find any {typeof(T)} {nameof(component)} in self or parents!", source);
         return found;
     }
 

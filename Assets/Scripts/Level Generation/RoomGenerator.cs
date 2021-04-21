@@ -35,8 +35,8 @@ public static class RoomGenerator
 
     private static int Size(int radius) => (radius * 2) - 1;
     private static bool InBounds(int radius, int x, int y) => (x + y) > (radius - 2) && (x + y) <= Size(radius) + (radius - 2);
-    private static Vector3 RelativePosition(int x, int y) => new Vector3(x * NewLevelGenerator.INNER_RADIUS + (NewLevelGenerator.INNER_RADIUS * y / 2f), 0f, ((NewLevelGenerator.OUTER_RADIUS + NewLevelGenerator.WALLSIZE) / 2f) * y);
+    private static Vector3 RelativePosition(int x, int y) => new Vector3(x * NewLevelGenerator.INNER_RADIUS + (NewLevelGenerator.INNER_RADIUS * y / 2f), 0f, ((NewLevelGenerator.OUTER_RADIUS + NewLevelGenerator.Wall_Length) / 2f) * y);
     
-    private static Vector3 AbsoluteTransform(int radius, Vector3 localPosition) => localPosition - new Vector3((radius - 1) * 1.5f * NewLevelGenerator.INNER_RADIUS, 0f, (radius - 1) * ((NewLevelGenerator.OUTER_RADIUS/2f) + (NewLevelGenerator.WALLSIZE/2f)));
+    private static Vector3 AbsoluteTransform(int radius, Vector3 localPosition) => localPosition - new Vector3((radius - 1) * 1.5f * NewLevelGenerator.INNER_RADIUS, 0f, (radius - 1) * ((NewLevelGenerator.OUTER_RADIUS/2f) + (NewLevelGenerator.Wall_Length/2f)));
     private static Vector3 AbsolutePosition(int radius, int x, int y) => AbsoluteTransform(radius, RelativePosition(x, y));
 }

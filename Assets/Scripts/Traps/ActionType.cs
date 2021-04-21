@@ -5,8 +5,9 @@ public class ActionType : ScriptableObject
 {
     public string actionName;
     public float cost;
+    public float damage;
     public bool freeIfBankrupt;
-    public bool placeable;
+    public bool isPlaceable;
     public GameObject prefab;
     public Texture2D icon;
 }

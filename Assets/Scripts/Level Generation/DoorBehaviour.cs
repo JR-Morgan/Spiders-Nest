@@ -16,6 +16,18 @@ public class DoorBehaviour : MonoBehaviour, IInteractable
 
     private UIDocument document;
     private InteractableDisplay display;
+    private WallController wallParent;
+    public WallController WallParent
+    {
+        get
+        {
+            if (wallParent == null) wallParent = GetComponentInParent<WallController>();
+            return wallParent;
+
+        }
+    }
+
+
 
 
     public float Cost
@@ -30,6 +42,7 @@ public class DoorBehaviour : MonoBehaviour, IInteractable
 
     private void Awake()
     {
+        this.RequireComponentInParents(out wallParent);
         document = FindObjectOfType<UIDocument>();
         display = new InteractableDisplay();
         display.SetMessage(
@@ -40,19 +53,21 @@ public class DoorBehaviour : MonoBehaviour, IInteractable
     }
 
 
-
-    private void BuyEventHandler()
+    private void OnDisable()
     {
         gameObject.layer = 0;
-        gameObject.SetActive(false);
-        OnHoverEnd();
         if (GameObject.FindGameObjectWithTag("LevelManager").TryGetComponent(out NavMeshSurface nav))
         {
             nav.BuildNavMesh();
         }
         else Debug.LogError($"Could not find {typeof(NavMeshSurface)}", this);
+    }
 
+    private void BuyEventHandler()
+    {
+        DoorObserver.Instance.ChangeDoorState(this, false);
 
+        OnHoverEnd();
     }
 
     public void OnHoverStart(Interactor interactor)

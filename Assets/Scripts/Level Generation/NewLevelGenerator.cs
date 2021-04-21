@@ -4,30 +4,36 @@ using UnityEngine;
 public class NewLevelGenerator : MonoBehaviour
 {
     #region Geometry constants
-    public const float WALLSIZE = 17f;
+    /// <summary>Length (in units) of walls</summary>
+    public const float Wall_Length = 17f;
+    /// <summary> Number of walls around a room</summary>
     public const int NUMBER_OF_WALLS = 6;
+    /// <summary> Euler angle between walls (60° for <c><see cref="NUMBER_OF_WALLS"/> = 6</c>)</summary>
     public const float THETA = 360f / NUMBER_OF_WALLS;
-    public static readonly float INNER_RADIUS = WALLSIZE * (1f / Mathf.Tan(Mathf.PI / 6f));
-    public static readonly float OUTER_RADIUS = WALLSIZE * (1f / Mathf.Sin(Mathf.PI / 6f));
+    /// <summary>Inner radius of room polygon</summary>
+    public static readonly float INNER_RADIUS = Wall_Length * (1f / Mathf.Tan(Mathf.PI / NUMBER_OF_WALLS));
+    /// <summary>Outer radius of room polygon</summary>
+    public static readonly float OUTER_RADIUS = Wall_Length * (1f / Mathf.Sin(Mathf.PI / NUMBER_OF_WALLS));
     #endregion
 
     #region Prefab References
     [Header("Prefab References")]
     [SerializeField]
-    private GameObject WallPrefab;
+    private GameObject wallPrefab;
     [SerializeField]
-    private GameObject RoomPrefab;
+    private GameObject roomPrefab;
     #endregion
 
     #region Generation Properties
     [Header("Generation Properties")]
+    [SerializeField]
     [Tooltip("The number of rooms between the centre and outside, inclusive of the centre room")]
-    [SerializeField]
     private int radius;
-    [SerializeField]
+
     [Header("Wall Generation Properties")]
+    [SerializeField]
     [Tooltip("The number of rotation groups")]
-    private int n = 3;
+    private int n = NUMBER_OF_WALLS / 2;
     #endregion
 
     #region Fields
@@ -54,9 +60,9 @@ public class NewLevelGenerator : MonoBehaviour
         InstantiateParent(ref roomParent, "Rooms");
         InstantiateParent(ref wallParent, "Walls");
 
-        GameObject[][,] wallGroups = WallGenerator.InstantiateWalls(wallParent.transform, WallPrefab, n, radius);
+        GameObject[][,] wallGroups = WallGenerator.InstantiateWalls(wallParent.transform, wallPrefab, n, radius);
 
-        GameObject[,] rooms = RoomGenerator.InstantiateRooms(roomParent.transform, RoomPrefab, radius);
+        GameObject[,] rooms = RoomGenerator.InstantiateRooms(roomParent.transform, roomPrefab, radius);
 
 
         for(int i = 0; i < wallGroups.Length; i++)

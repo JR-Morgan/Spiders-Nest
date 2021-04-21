@@ -67,12 +67,12 @@ public class MainMenuController : MenuController
 
     private void StartNewGame()
     {
-        StartAnimation(AnimState.Out, () => SceneManager.LoadScene(1));
+        StartAnimation(AnimState.Out, () => SceneManager.LoadScene(2));
     }
 
     private void Continue()
     {
-        StartAnimation(AnimState.Out, () => SceneManager.LoadScene(1));
+        StartAnimation(AnimState.Out, () => SceneManager.LoadScene(2));
     }
 
     private void Options()

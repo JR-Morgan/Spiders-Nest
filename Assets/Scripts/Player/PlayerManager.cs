@@ -14,12 +14,7 @@ public class PlayerManager : Singleton<PlayerManager>
     public Player MasterPlayer { get; private set; }
     public NetworkPlayer Master => PhotonNetwork.IsConnected? AllPlayers[MasterPlayer] : _offline;
 
-    public bool IsMasterOrOffline {
-        get {
-            Debug.Assert(((LocalPlayer == MasterPlayer) == PhotonNetwork.IsMasterClient) || !PhotonNetwork.IsConnected);
-            return PhotonNetwork.IsMasterClient || !PhotonNetwork.IsConnected;
-        }
-    }
+    public static bool IsMasterOrOffline => PhotonNetwork.IsMasterClient || !PhotonNetwork.IsConnected;
 
     public void RegisterNetworkPlayer(NetworkPlayer newPlayer)
     {

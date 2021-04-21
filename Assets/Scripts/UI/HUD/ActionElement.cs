@@ -7,12 +7,32 @@ public class ActionElement : VisualElement
 {
     private static readonly VisualTreeAsset view = Resources.Load<VisualTreeAsset>(@"UI/Views/ActionView");
 
+    private Color normal = Color.white, unavaiable = Color.red;
+
+
+
     #region Child Elements
     private VisualElement icon;
     private Label actionName, actionCost;
     #endregion
 
     #region Properties
+    private bool _canAfford;
+    public bool Can_Afford
+    {
+        get => _canAfford;
+        set
+        {
+            _canAfford = value;
+            UpdateAfford();
+        }
+    }
+    private void UpdateAfford()
+    {
+        if (actionCost != null) actionCost.style.color = Can_Afford? normal : unavaiable;
+    }
+
+
     private bool _isActive;
     public bool Is_Active
     {
@@ -77,13 +97,15 @@ public class ActionElement : VisualElement
     }
     #endregion
 
-    private static string FormatCost(float cost) => cost == 0 ? $"Cost: FREE!" : $"Cost: {cost:0.##}";
+    private static string FormatCost(float cost) => cost < 0.005f ? $"Cost: FREE!" : $"Cost: {cost:0.##}";
 
     private void Setup()
     {
         icon = this.Q<VisualElement>("Icon");
         actionName = this.Q<Label>("ActionName");
         actionCost = this.Q<Label>("ActionCost");
+
+        UpdateAfford();
         UpdateName();
         UpdateCost();
         UpdateSelected();
@@ -107,6 +129,7 @@ public class ActionElement : VisualElement
     { }
     public new class UxmlTraits : VisualElement.UxmlTraits
     {
+        private readonly UxmlBoolAttributeDescription afford = new UxmlBoolAttributeDescription { name = nameof(Can_Afford), defaultValue = false };
         private readonly UxmlBoolAttributeDescription selected = new UxmlBoolAttributeDescription { name = nameof(Is_Active), defaultValue = false };
         private readonly UxmlStringAttributeDescription name = new UxmlStringAttributeDescription { name = nameof(Action_Name_Text), defaultValue = "Action Name" };
         private readonly UxmlFloatAttributeDescription cost = new UxmlFloatAttributeDescription { name = nameof(Action_Cost), defaultValue = 0 };
@@ -122,6 +145,7 @@ public class ActionElement : VisualElement
 
             var element = ve as ActionElement;
 
+            element.Can_Afford = afford.GetValueFromBag(bag, cc);
             element.Is_Active = selected.GetValueFromBag(bag, cc);
             element.Action_Name_Text = name.GetValueFromBag(bag, cc);
             element.Action_Cost = cost.GetValueFromBag(bag, cc);

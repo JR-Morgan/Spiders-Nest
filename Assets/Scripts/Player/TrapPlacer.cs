@@ -3,15 +3,20 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// This <see cref="MonoBehaviour"/> controls the placing of traps / player attacks.<br/>
+/// </summary>
+[RequireComponent(typeof(PlayerInventory))]
 public class TrapPlacer : MonoBehaviour
 {
     private const float MAX_RAYCAST_DISTANCE = 500f;
 
-
     [SerializeField]
     private ActionType _activeAction;
     [SerializeField]
+    [Tooltip("The key to start placing the " + nameof(ActiveAction))]
     private KeyCode placeKey;
+    [Tooltip("The " + nameof(Color) + " to be used while placing for " + nameof(ActionType) + "s where " + nameof(ActionType.isPlaceable) + " is true")]
     [SerializeField]
     private Color placingColor;
 
@@ -24,14 +29,16 @@ public class TrapPlacer : MonoBehaviour
     }
 
     private new Camera camera;
+    private PlayerInventory inventory;
 
     private void Awake()
     {
+        inventory = GetComponent<PlayerInventory>();
         this.RequireComponentInChildren(out camera);
 
         if (TryGetComponent(out PhotonView photonView))
         {
-            if (!photonView.IsMine && PhotonNetwork.IsConnected)
+            if (PhotonNetwork.IsConnected && !photonView.IsMine)
             {
                 Destroy(this);
                 Destroy(camera);
@@ -43,6 +50,7 @@ public class TrapPlacer : MonoBehaviour
     private void Start()
     {
         ActionController.Instance.OnActiveChange.AddListener(a => ActiveAction = a);
+        inventory.OnValueChange.AddListener(MoneyChangeHandler);
         ActiveAction = ActionController.Instance.Active;
     }
 
@@ -52,7 +60,11 @@ public class TrapPlacer : MonoBehaviour
 
     private bool IsPlacing => placingObject != null;
 
-
+    /// <summary>
+    /// Cancels the <see cref="ActiveAction"/>
+    /// </summary>
+    /// <returns><c>false</c> if player was not placing a <see cref="GameObject"/>; otherwise, <c>true</c></returns>
+    /// <remarks>See <see cref="IsPlacing"/></remarks>
     public bool CancelPlace()
     {
         if (!IsPlacing) return false;
@@ -60,6 +72,18 @@ public class TrapPlacer : MonoBehaviour
 
         return true;
     }
+
+    private void MoneyChangeHandler(float money = default)
+    {
+        if (IsPlacing)
+        {
+            if(!inventory.CanAfford(ActiveAction))
+            {
+                CancelPlace();
+            }
+        }
+    }
+
 
     private bool CameraHit(out Vector3 newPosition)
     {
@@ -88,45 +112,80 @@ public class TrapPlacer : MonoBehaviour
 
             static float RoundToNearest(float value, float factor) => Mathf.Round(value / factor) * factor;
             
-            placingObject.transform.rotation = Quaternion.Euler(0f, RoundToNearest(this.transform.rotation.eulerAngles.y + 30f, 30f) + 60f,0f);
-
+            placingObject.transform.rotation = Quaternion.Euler(0f, RoundToNearest(this.transform.rotation.eulerAngles.y + NewLevelGenerator.THETA / 2, NewLevelGenerator.THETA / 2) + NewLevelGenerator.THETA, 0f); 
             if (Input.GetKeyDown(placeKey))
             {
-                Place();
+                if(inventory.TrySubtract(ActiveAction.cost))
+                    Place();
             }
         }
         else
         {
             if (Input.GetKeyDown(placeKey))
             {
-
-                if (CameraHit(out Vector3 newPosition))
+                if (inventory.CanAfford(ActiveAction)) //Safe to do ForceSubtract inside body
                 {
-                    GameObject go = Instantiate(ActiveAction.prefab);
-                    go.transform.position = newPosition;
-
-                    if (ActiveAction.placeable)
+                    if (CameraHit(out Vector3 newPosition))
                     {
-                        placingObject = go;
-                        SetTint(placingColor);
+                        GameObject go;
+                        if (ActiveAction.isPlaceable)
+                        {
+                            //Local only instantiation while placing
+                            go = Instantiate(ActiveAction.prefab, newPosition, Quaternion.identity);
+                            placingObject = go;
+                            SetColour(placingColor);
+                        }
+                        else
+                        {
+                            inventory.SubtractUnchecked(ActiveAction.cost); //Safe to do
+
+                            SetupLocalTrap(InstantiateActive(newPosition, Quaternion.identity));
+                        }
                     }
                 }
             }
         }
+    }
 
+
+    private GameObject InstantiateActive(Vector3 position, Quaternion rotation)
+    {
+        if (PhotonNetwork.IsConnected)
+        {
+            return PhotonNetwork.Instantiate($"Prefabs/Traps/{ActiveAction.prefab.name}", position, rotation);
+        }
+        else
+        {
+            return Instantiate(ActiveAction.prefab, position, rotation);
+        }
     }
 
     private void Place()
     {
-        SetTint(Color.white);
+        Vector3 pos = placingObject.transform.position;
+        Quaternion rot = placingObject.transform.rotation;
+
+        Destroy(placingObject);
         placingObject = null;
+
+        GameObject placedGameObject = InstantiateActive(pos, rot);
+        SetupLocalTrap(placedGameObject);
+
     }
 
-    private void SetTint(Color color)
+    private void SetupLocalTrap(GameObject go)
+    {
+        if (go.TryGetComponentInChildren(out AOEDamage aoeDamage, true))
+        {
+            aoeDamage.Damage = ActiveAction.damage;
+        }
+    }
+
+    private void SetColour(Color color)
     {   
         foreach (Renderer r in placingObject.GetComponentsInChildren<Renderer>())
         {
-            r.material.SetColor("_Color", color);
+            r.material.SetColor("_Color", color); //TODO set colour properly
         }
     }
 
