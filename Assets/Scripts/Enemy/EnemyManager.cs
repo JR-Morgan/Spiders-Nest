@@ -19,24 +19,26 @@ public class EnemyManager : Singleton<EnemyManager>
 
     [Header("Scene References")]
     [SerializeField]
-    [Tooltip("The layer that enemies should be apart of once registered")]
+    [Tooltip("The layer that enemies should be apart of once registered.")]
     private LayerMask enemyLayer;
-
-    [Header("Evolution Settings")]
-    [SerializeField]
-    [Tooltip("Specify evolution order of " + nameof(EnemyModel) + ".\nensure list ordered such that element 0 is the initial state and " + nameof(EnemyType) + " matches the " + nameof(EnemyModel.typeID))]
-    private EnemyModel[] enemyModels;
 
     [Header("Settings")]
     [SerializeField]
+    [Tooltip("Specify evolution order of " + nameof(EnemyModel) + ".\nensure list is ordered such that element 0 is the initial state and " + nameof(EnemyType) + " matches the " + nameof(EnemyModel.typeID))]
+    private EnemyModel[] enemyModels;
+
+    [SerializeField]
     [Range(0f, 1f)]
-    [Tooltip("The proportion of enemies to be updated each "+ nameof(Update) +"(). Lower values increase performance but can lead to enemies that are slow to respond")]
+    [Tooltip("The proportion of enemies to be updated each "+ nameof(Update) +"(). Lower values increase performance but can lead to enemies that are slow to respond.")]
     private float updateProportion;
+
+    [Header("Read only")]
+    [SerializeField]
+    [Tooltip("The number of enemies killed this game.")]
+    private int numberOfKills;
     #endregion
 
-    /// <summary>
-    /// A list of all active (i.e. alive) <see cref="Enemy"/> instances managed by the <see cref="EnemyManager"/>
-    /// </summary>
+    /// <summary>A list of all (alive) <see cref="Enemy"/> instances managed by this <see cref="EnemyManager"/></summary>
     public List<Enemy> Enemies { get; private set; }
 
     /// <param name="enemyType">The specified <see cref="EnemyType"/></param>
@@ -47,11 +49,11 @@ public class EnemyManager : Singleton<EnemyManager>
     {
         base.Awake();
 
-        RegisterEnemiesInScene();
+        FindAndRegisterEnemiesInScene();
 
         //Enemy Types Validation
         {
-            if (enemyModels.Length < Enum.GetNames(typeof(EnemyType)).Length) Debug.LogWarning($"{nameof(enemyModels)} is missing some {typeof(EnemyType)}s", this);
+            Debug.Assert(enemyModels.Length >= Enum.GetNames(typeof(EnemyType)).Length, $"{nameof(enemyModels)} is missing some {typeof(EnemyType)}s", this);
             for (int i = 0; i < enemyModels.Length; i++)
             {
                 Debug.Assert((int)enemyModels[i].typeID == i , $"Mismatch between {typeof(EnemyType)} and index in {nameof(enemyModels)} at index {i}\n({enemyModels[i]}) is id {(int)enemyModels[i].typeID}", this);
@@ -61,14 +63,14 @@ public class EnemyManager : Singleton<EnemyManager>
     }
 
     /// <summary>
-    /// Clears <see cref="Enemies"/> list and searches scene for any <see cref="Enemy"/> instances.
+    /// Clears <see cref="Enemies"/> list and searches the scene for any <see cref="Enemy"/> instances.
     /// </summary>
-    private void RegisterEnemiesInScene()
+    private void FindAndRegisterEnemiesInScene(bool includeInactive = false)
     {
         if (Enemies == null) Enemies = new List<Enemy>();
         else Enemies.Clear();
 
-        foreach (Enemy enemy in FindObjectsOfType<Enemy>())
+        foreach (Enemy enemy in FindObjectsOfType<Enemy>(includeInactive))
         {
             Enemies.Add(enemy);
             if (!enemy.IsInitialised) enemy.EnemyModel = enemyModels[0];
@@ -100,6 +102,18 @@ public class EnemyManager : Singleton<EnemyManager>
     #region Factory methods
 
     public bool CreateEnemy(Vector3 position, EnemyType enemyType = default) => CreateEnemy(position, Quaternion.identity, enemyType);
+
+    /// <summary>
+    /// Creates a new instance of <see cref="enemyPrefab"/> if the following condition is <c>true</c>.<br/>
+    /// <code>!<see cref="PhotonNetwork.IsConnected"/> || <see cref="PhotonNetwork.IsMasterClient"/></code>
+    /// </summary>
+    /// <param name="position"></param>
+    /// <param name="rotation"></param>
+    /// <param name="enemyType"></param>
+    /// <returns><c>true</c> if the <see cref="GameObject"/> was successful instantiated</returns>
+    /// <remarks>
+    /// Will use <see cref="PhotonNetwork"/> to instantiate if <see cref="PhotonNetwork.IsMasterClient"/>.<br/>
+    /// </remarks>
     public bool CreateEnemy(Vector3 position, Quaternion rotation, EnemyType enemyType = default)
     {
         GameObject enemyGameObject;
@@ -115,18 +129,29 @@ public class EnemyManager : Singleton<EnemyManager>
         {
             return false;
         }
+
+        //Client side only setup (some of which gets observed and sent to other clients)
         enemyGameObject.layer = enemyLayer.ToLayerNumber();
         Enemy enemy = enemyGameObject.GetComponent<Enemy>();
+        enemy.OnDeath.AddListener(e => OnEnemyDeath.Invoke(e, ++numberOfKills)); //It might be worth removing this listener on UnregisterEnemy
         enemy.ModelType = enemyType;
+
         return true;
     }
 
     #endregion
 
-
+    #region Events
+    /// <summary>
+    /// <see cref="UnityEvent{Enemy,int}"/> invoked when any <see cref="Enemy.OnDeath"/> event is raised by any <see cref="Enemy"/> created by this <see cref="EnemyManager"/>.<br/>
+    /// Event parameters are the <see cref="Enemy"/> that has died, and the cumulative <see cref="int"/> number of enemies that have died this session.
+    /// </summary>
+    public UnityEvent<Enemy, int> OnEnemyDeath;
+    #endregion
 
     #region Updates
 
+    /// <summary>The last index in the <see cref="Enemies"/> list that was updated</summary>
     private int updateOffset;
 
     public void Update()

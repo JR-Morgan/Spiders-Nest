@@ -7,7 +7,7 @@ public class ActionElement : VisualElement
 {
     private static readonly VisualTreeAsset view = Resources.Load<VisualTreeAsset>(@"UI/Views/ActionView");
 
-    private Color normal = Color.white, unavaiable = Color.red;
+    private static Color normal = Color.white, unavaiable = Color.red;
 
 
 

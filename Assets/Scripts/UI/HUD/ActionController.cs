@@ -35,7 +35,7 @@ public class ActionController : Singleton<ActionController>
                 ActionElement element = new ActionElement
                 {
                     Action_Name_Text = a.actionName,
-                    Action_Cost = a.cost,
+                    Action_Cost = 0,
                     Icon = a.icon,
                 };
                 root.Add(element);
@@ -61,6 +61,7 @@ public class ActionController : Singleton<ActionController>
     {
         foreach (ActionType action in elementOfType.Keys)
         {
+            elementOfType[action].Action_Cost = inventory.CostOfAction(action);
             elementOfType[action].Can_Afford = inventory.CanAfford(action);
         }
     }

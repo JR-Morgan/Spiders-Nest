@@ -14,6 +14,7 @@
         <xs:attribute default="" name="class" type="xs:string" use="optional" />
         <xs:attribute default="" name="content-container" type="xs:string" use="optional" />
         <xs:attribute default="" name="style" type="xs:string" use="optional" />
+        <xs:attribute default="false" name="Can_Afford" type="xs:boolean" use="optional" />
         <xs:attribute default="false" name="Is_Active" type="xs:boolean" use="optional" />
         <xs:attribute default="Action Name" name="Action_Name_Text" type="xs:string" use="optional" />
         <xs:attribute default="0" name="Action_Cost" type="xs:float" use="optional" />
@@ -22,12 +23,9 @@
     </xs:complexContent>
   </xs:complexType>
   <xs:element name="ActionElement" substitutionGroup="engine:VisualElement" type="ActionElementType" />
-  <xs:complexType name="HudType">
+  <xs:complexType name="HudTextFieldType">
     <xs:complexContent mixed="false">
       <xs:restriction base="engine:VisualElementType">
-        <xs:sequence minOccurs="0" maxOccurs="unbounded">
-          <xs:element ref="engine:VisualElement" />
-        </xs:sequence>
         <xs:attribute default="" name="name" type="xs:string" use="optional" />
         <xs:attribute default="" name="view-data-key" type="xs:string" use="optional" />
         <xs:attribute default="Position" name="picking-mode" type="engine:VisualElement_picking-mode_Type" use="optional" />
@@ -38,11 +36,13 @@
         <xs:attribute default="" name="class" type="xs:string" use="optional" />
         <xs:attribute default="" name="content-container" type="xs:string" use="optional" />
         <xs:attribute default="" name="style" type="xs:string" use="optional" />
+        <xs:attribute default="Title" name="Title" type="xs:string" use="optional" />
+        <xs:attribute default="Value" name="Value" type="xs:string" use="optional" />
         <xs:anyAttribute processContents="lax" />
       </xs:restriction>
     </xs:complexContent>
   </xs:complexType>
-  <xs:element name="Hud" substitutionGroup="engine:VisualElement" type="HudType" />
+  <xs:element name="HudTextField" substitutionGroup="engine:VisualElement" type="HudTextFieldType" />
   <xs:complexType name="InteractableDisplayType">
     <xs:complexContent mixed="false">
       <xs:restriction base="engine:VisualElementType">
@@ -105,4 +105,26 @@
     </xs:complexContent>
   </xs:complexType>
   <xs:element name="OptionButton" substitutionGroup="engine:VisualElement" type="OptionButtonType" />
+  <xs:complexType name="RoomFieldType">
+    <xs:complexContent mixed="false">
+      <xs:restriction base="engine:VisualElementType">
+        <xs:attribute default="" name="name" type="xs:string" use="optional" />
+        <xs:attribute default="" name="view-data-key" type="xs:string" use="optional" />
+        <xs:attribute default="Position" name="picking-mode" type="engine:VisualElement_picking-mode_Type" use="optional" />
+        <xs:attribute default="" name="tooltip" type="xs:string" use="optional" />
+        <xs:attribute default="None" name="usage-hints" type="engine:VisualElement_usage-hints_Type" use="optional" />
+        <xs:attribute default="0" name="tabindex" type="xs:int" use="optional" />
+        <xs:attribute default="false" name="focusable" type="xs:boolean" use="optional" />
+        <xs:attribute default="" name="class" type="xs:string" use="optional" />
+        <xs:attribute default="" name="content-container" type="xs:string" use="optional" />
+        <xs:attribute default="" name="style" type="xs:string" use="optional" />
+        <xs:attribute default="" name="Label_Text" type="xs:string" use="optional" />
+        <xs:attribute default="" name="Value" type="xs:string" use="optional" />
+        <xs:attribute default="Submit" name="Button_Text" type="xs:string" use="optional" />
+        <xs:attribute default="" name="Error_Text" type="xs:string" use="optional" />
+        <xs:anyAttribute processContents="lax" />
+      </xs:restriction>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="RoomField" substitutionGroup="engine:VisualElement" type="RoomFieldType" />
 </xs:schema>

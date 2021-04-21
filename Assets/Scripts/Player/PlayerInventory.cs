@@ -11,9 +11,11 @@ public class PlayerInventory : MonoBehaviour
     public UnityEvent<float> OnValueChange;
 
     public bool CheckValidSubtract(float amount) => CheckValidAdd(-amount);
-    public bool CheckValidAdd(float amount) => Money + amount > 0f;
+    public bool CheckValidAdd(float amount) => Money + amount >= 0f;
 
-    public bool CanAfford(ActionType action) => CheckValidSubtract(action.cost) || action.freeIfBankrupt;
+    public bool CanAfford(ActionType action) => CheckValidSubtract(CostOfAction(action));
+
+    public float CostOfAction(ActionType action) => Mathf.RoundToInt(action.cost + Money * action.proportionalCost);
 
     public bool TrySubtract(float amount) => TryAdd(-amount);
     public bool TryAdd(float amount)

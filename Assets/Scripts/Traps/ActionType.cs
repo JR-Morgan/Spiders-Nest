@@ -5,6 +5,8 @@ public class ActionType : ScriptableObject
 {
     public string actionName;
     public float cost;
+    [Range(0,1)]
+    public float proportionalCost;
     public float damage;
     public bool freeIfBankrupt;
     public bool isPlaceable;

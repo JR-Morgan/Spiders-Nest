@@ -115,7 +115,7 @@ public class TrapPlacer : MonoBehaviour
             placingObject.transform.rotation = Quaternion.Euler(0f, RoundToNearest(this.transform.rotation.eulerAngles.y + NewLevelGenerator.THETA / 2, NewLevelGenerator.THETA / 2) + NewLevelGenerator.THETA, 0f); 
             if (Input.GetKeyDown(placeKey))
             {
-                if(inventory.TrySubtract(ActiveAction.cost))
+                if(inventory.TrySubtract(inventory.CostOfAction(ActiveAction)))
                     Place();
             }
         }
@@ -123,7 +123,7 @@ public class TrapPlacer : MonoBehaviour
         {
             if (Input.GetKeyDown(placeKey))
             {
-                if (inventory.CanAfford(ActiveAction)) //Safe to do ForceSubtract inside body
+                if (inventory.CanAfford(ActiveAction)) //Safe to do unchecked inventory transactions inside body
                 {
                     if (CameraHit(out Vector3 newPosition))
                     {
@@ -136,15 +136,14 @@ public class TrapPlacer : MonoBehaviour
                             SetColour(placingColor);
                         }
                         else
-                        {
-                            inventory.SubtractUnchecked(ActiveAction.cost); //Safe to do
+                        
+                            inventory.SubtractUnchecked(inventory.CostOfAction(ActiveAction)); //Safe to do
 
                             SetupLocalTrap(InstantiateActive(newPosition, Quaternion.identity));
                         }
                     }
                 }
             }
-        }
     }
 
 

@@ -13,7 +13,8 @@ MonoBehaviour:
   m_Name: AOE Attack
   m_EditorClassIdentifier: 
   actionName: AOE Attack
-  cost: 10
+  cost: 0
+  proportionalCost: 0.1
   damage: 10
   freeIfBankrupt: 1
   isPlaceable: 0

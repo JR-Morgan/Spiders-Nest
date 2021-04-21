@@ -1,0 +1,6 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <ui:VisualElement name="Container" style="flex-direction: row; margin-top: 5px; margin-bottom: 5px;">
+        <ui:Label text="Title:" display-tooltip-when-elided="true" name="Title" style="flex-grow: 0; -unity-text-align: middle-right; font-size: 18px; margin-right: 10px; min-width: 150px; color: rgb(255, 255, 255);" />
+        <ui:Label text="30" display-tooltip-when-elided="true" name="Value" style="flex-grow: 0; -unity-text-align: middle-left; font-size: 18px; margin-left: 10px; color: rgb(255, 255, 255);" />
+    </ui:VisualElement>
+</ui:UXML>
