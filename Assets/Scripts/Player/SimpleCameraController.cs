@@ -83,7 +83,7 @@ namespace UnityTemplateProjects
 
         void Update()
         {
-
+            if (Time.timeScale == 0) return;
 #if ENABLE_LEGACY_INPUT_MANAGER
 
             {

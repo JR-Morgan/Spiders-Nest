@@ -43,7 +43,9 @@ public class PlayerBehaviour : MonoBehaviour
 
         PlayerManager.Instance.RegisterNetworkPlayer(this);
 
+
         DontDestroyOnLoad(this.gameObject);
+
 
         if(PhotonNetwork.IsConnected)
         {

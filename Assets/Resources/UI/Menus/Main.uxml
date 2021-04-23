@@ -6,4 +6,5 @@
     <ui:VisualElement name="Root" style="flex-grow: 1;" />
     <ui:VisualElement name="ActionContainer" style="top: 100px; bottom: 100px; position: absolute; right: 0;" />
     <ui:VisualElement name="HudContainer" style="top: 0; position: absolute; left: 0;" />
+    <ui:VisualElement name="PauseMenuContainer" style="left: 25%; top: 25%; right: 25%; bottom: 25%; position: absolute;" />
 </ui:UXML>

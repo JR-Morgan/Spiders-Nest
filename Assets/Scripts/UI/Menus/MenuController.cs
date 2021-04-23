@@ -52,7 +52,7 @@ public abstract class MenuController : MonoBehaviour
         return menu;
     }
 
-    protected OptionButton InitialiseOption(string text, Action OnClick)
+    protected OptionButton InitialiseOption(string text, Action OnClick = null)
     {
         OptionButton b = new OptionButton
         {
@@ -60,7 +60,7 @@ public abstract class MenuController : MonoBehaviour
         };
         b.RegisterCallback<ClickEvent>(
             evt => {
-                OnClick.Invoke();
+                OnClick?.Invoke();
                 SelectedEnd(b);
             });
 
@@ -109,7 +109,7 @@ public abstract class MenuController : MonoBehaviour
     {
         if (animState != AnimState.None)
         {
-            animProgress -= animationSpeed * Time.deltaTime;
+            animProgress -= animationSpeed * Time.unscaledDeltaTime;
 
             float alpha = animState switch
             {
