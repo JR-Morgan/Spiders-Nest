@@ -14,8 +14,14 @@ public class HudController : MonoBehaviour
 
         Debug.Assert(container != null, $"{typeof(UIDocument)} did not contain an element with name {CONTAINER_ELEMENT_NAME}", this);
 
+        { // Health
+            HudTextField health = new HudTextField("Health:", RoundValue(PlayerManager.Instance.Local.Health));
+            PlayerManager.Instance.Local.OnHealthChange.AddListener((h) => health.Value = RoundValue(h));
+            container.Add(health);
+        }
+
         { // Kills
-            HudTextField kills = new HudTextField("Enemies Killed:");
+            HudTextField kills = new HudTextField("Enemies Killed:", "0");
             EnemyManager.Instance.OnEnemyDeath.AddListener((e,n) => kills.Value = n.ToString());
             container.Add(kills);
         }
@@ -23,13 +29,13 @@ public class HudController : MonoBehaviour
         { // Money
             PlayerInventory inventory = PlayerManager.Instance.Local.Inventory;
 
-            HudTextField money = new HudTextField("Money:", FormatMoney(inventory.Money));
+            HudTextField money = new HudTextField("Money:", RoundValue(inventory.Money));
 
-            inventory.OnValueChange.AddListener(newValue => money.Value = FormatMoney(newValue));
+            inventory.OnValueChange.AddListener(newValue => money.Value = RoundValue(newValue));
             container.Add(money);
         }
 
     }
 
-    private static string FormatMoney(float money) => $"{money:0.##}";
+    private static string RoundValue(float value) => $"{value:0.##}";
 }

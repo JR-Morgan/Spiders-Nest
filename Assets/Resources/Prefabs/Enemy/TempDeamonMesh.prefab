@@ -17,11 +17,23 @@ PrefabInstance:
       objectReference: {fileID: 2100000, guid: 774a1aaa8d91ecb42a7c9cb5df4eabfb, type: 2}
     - target: {fileID: 751437156892078535, guid: d24bbcd803b6f5c4fa66bf76725bbe36, type: 3}
       propertyPath: m_Name
-      value: TempDeamon
+      value: TempDeamonMesh
       objectReference: {fileID: 0}
     - target: {fileID: 751437156892078538, guid: d24bbcd803b6f5c4fa66bf76725bbe36, type: 3}
       propertyPath: m_RootOrder
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 751437156892078538, guid: d24bbcd803b6f5c4fa66bf76725bbe36, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 751437156892078538, guid: d24bbcd803b6f5c4fa66bf76725bbe36, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 751437156892078538, guid: d24bbcd803b6f5c4fa66bf76725bbe36, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 751437156892078538, guid: d24bbcd803b6f5c4fa66bf76725bbe36, type: 3}
       propertyPath: m_LocalPosition.x

@@ -105,17 +105,17 @@ public class TrapPlacer : MonoBehaviour
         if (IsPlacing)
         {
             //Update position of placingObject
-            if(CameraHit(out Vector3 newPosition))
+            if (CameraHit(out Vector3 newPosition))
             {
                 placingObject.transform.position = newPosition;
             }
 
             static float RoundToNearest(float value, float factor) => Mathf.Round(value / factor) * factor;
-            
-            placingObject.transform.rotation = Quaternion.Euler(0f, RoundToNearest(this.transform.rotation.eulerAngles.y + NewLevelGenerator.THETA / 2, NewLevelGenerator.THETA / 2) + NewLevelGenerator.THETA, 0f); 
+
+            placingObject.transform.rotation = Quaternion.Euler(0f, RoundToNearest(this.transform.rotation.eulerAngles.y + NewLevelGenerator.THETA / 2, NewLevelGenerator.THETA / 2) + NewLevelGenerator.THETA, 0f);
             if (Input.GetKeyDown(placeKey))
             {
-                if(inventory.TrySubtract(inventory.CostOfAction(ActiveAction)))
+                if (inventory.TrySubtract(inventory.CostOfAction(ActiveAction)))
                     Place();
             }
         }
@@ -136,7 +136,7 @@ public class TrapPlacer : MonoBehaviour
                             SetColour(placingColor);
                         }
                         else
-                        
+                        {
                             inventory.SubtractUnchecked(inventory.CostOfAction(ActiveAction)); //Safe to do
 
                             SetupLocalTrap(InstantiateActive(newPosition, Quaternion.identity));
@@ -144,6 +144,7 @@ public class TrapPlacer : MonoBehaviour
                     }
                 }
             }
+        }
     }
 
 

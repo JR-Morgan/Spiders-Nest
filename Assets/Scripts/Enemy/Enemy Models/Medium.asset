@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   typeID: 1
   prefab: {fileID: 7874082561985238655, guid: 46a114541b5059f40a438b74bf23e211, type: 3}
+  damage: 5
   proababiltyToEvolve: 0.3
   timeUntilEvolve: 20
   timeToEvolve: 0

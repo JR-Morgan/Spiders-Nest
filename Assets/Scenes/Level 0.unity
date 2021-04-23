@@ -606,8 +606,7 @@ MonoBehaviour:
   Synchronization: 3
   OwnershipTransfer: 0
   observableSearch: 2
-  ObservedComponents:
-  - {fileID: 311632070}
+  ObservedComponents: []
   sceneViewId: 20
   InstantiationId: 0
   isRuntimeInstantiated: 0
@@ -2614,6 +2613,10 @@ PrefabInstance:
       propertyPath: m_LocalRotation.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7963741694751486713, guid: 5aeea1e0e1be0d045814259879e71f6b, type: 3}
+      propertyPath: m_NavMeshData
+      value: 
+      objectReference: {fileID: 23800000, guid: 221c0694366c37b4fa0f0e9bdf797140, type: 2}
     m_RemovedComponents:
     - {fileID: 8722000646650393403, guid: 5aeea1e0e1be0d045814259879e71f6b, type: 3}
     - {fileID: 1656959554234493109, guid: 5aeea1e0e1be0d045814259879e71f6b, type: 3}

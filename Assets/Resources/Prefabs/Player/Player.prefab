@@ -252,10 +252,10 @@ GameObject:
   - component: {fileID: 5038286848510463701}
   - component: {fileID: 3843933732731681494}
   - component: {fileID: 1608191076171958786}
+  - component: {fileID: -3784574131143855127}
   - component: {fileID: 5873837802340139594}
   - component: {fileID: 3940314005084953269}
   - component: {fileID: 3667702301892867961}
-  - component: {fileID: -3784574131143855127}
   m_Layer: 8
   m_Name: Player
   m_TagString: Player
@@ -378,6 +378,25 @@ MonoBehaviour:
   OnValueChange:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &-3784574131143855127
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1053978658133368307}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b60a64adad4a92b41a7095873095622b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  OnDeath:
+    m_PersistentCalls:
+      m_Calls: []
+  OnHealthChange:
+    m_PersistentCalls:
+      m_Calls: []
+  _health: 0
 --- !u!114 &5873837802340139594
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -432,15 +451,3 @@ MonoBehaviour:
   m_SynchronizeRotation: 1
   m_SynchronizeScale: 0
   m_UseLocal: 1
---- !u!114 &-3784574131143855127
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1053978658133368307}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b60a64adad4a92b41a7095873095622b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 

@@ -5,6 +5,7 @@ public class EnemyModel : ScriptableObject
 {
     public EnemyType typeID;
     public GameObject prefab;
+    public float damage;
     [Header("Evolution Settings")]
     [Range(0f, 1f)]
     public float proababiltyToEvolve;

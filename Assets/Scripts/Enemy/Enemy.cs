@@ -16,6 +16,8 @@ public class Enemy : ObservableMonoBehaviour<Enemy>
     private float _health;
     [SerializeField]
     private Transform _goal;
+    [SerializeField]
+    private Collider attackCollider;
     #endregion
 
     #region Properties
@@ -73,7 +75,7 @@ public class Enemy : ObservableMonoBehaviour<Enemy>
 
         if (PlayerManager.IsMasterOrOffline)
         {
-            timeOfEvolve = UnityEngine.Random.value < EnemyModel.proababiltyToEvolve ? Time.time + enemyData.timeUntilEvolve : -1; //TODO add some small variation
+            timeOfEvolve = Random.value < EnemyModel.proababiltyToEvolve ? Time.time + enemyData.timeUntilEvolve : -1; //TODO add some small variation
         }
 
         agent = EnemyAgentFactory.CreateAgent(this, enemyData.typeID, timeOfEvolve);
@@ -99,8 +101,26 @@ public class Enemy : ObservableMonoBehaviour<Enemy>
 
     #endregion
 
+    #region
+    public bool IsAttacking { get; private set; }
+
+    private void EndAttack()
+    {
+        IsAttacking = false;
+    }
+
+    public void StartAttacking()
+    {
+        if (!IsAttacking)
+        {
+            IsAttacking = true;
+            Invoke(nameof(EndAttack), 1f);
+        }
+    }
+    #endregion
+
     #region Damage
-    public void AddDamage(float damage, NetworkPlayer hitBy)
+    public void AddDamage(float damage, PlayerBehaviour hitBy)
     {
         _health -= damage;
         if (_health <= 0)
@@ -112,6 +132,8 @@ public class Enemy : ObservableMonoBehaviour<Enemy>
             Invoke(nameof(Die), 0.001f); //Small delay to destroy on next frame
         }
     }
+
+
 
     public UnityEvent<Enemy> OnDeath;
     public void Die()
@@ -125,8 +147,9 @@ public class Enemy : ObservableMonoBehaviour<Enemy>
 
     #region Enemy Behaviour
     private EnemyAgent agent;
+
     /// <summary>
-    /// Updates the <see cref="Enemy"/> through <see cref=""/>
+    /// Updates the <see cref="Enemy"/> through <see cref="EnemyAgent.Act"/>
     /// </summary>
     /// <returns><c>false</c> if the <see cref="Enemy"/> was unable to update; otherwise, <c>false</c></returns>
     public bool Tick()
@@ -136,9 +159,15 @@ public class Enemy : ObservableMonoBehaviour<Enemy>
         agent.Act();
         if (_goal == null) return false;
         
-
         return this.navAgent.SetDestination(_goal.position);
-        
+    }
+
+    private void Update()
+    {
+        if (Vector3.Distance(transform.position, PlayerManager.Instance.Local.transform.position) <= 4f)
+        {
+            PlayerManager.Instance.Local.Health -= EnemyModel.damage * Time.deltaTime;
+        }
     }
     #endregion
 }

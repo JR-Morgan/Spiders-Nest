@@ -6,17 +6,17 @@ using UnityEngine;
 public class PlayerManager : Singleton<PlayerManager>
 {
 
-    public Dictionary<Player, NetworkPlayer> AllPlayers { get; private set; }
+    public Dictionary<Player, PlayerBehaviour> AllPlayers { get; private set; }
 
     public Player LocalPlayer { get; private set; }
-    private NetworkPlayer _offline;
-    public NetworkPlayer Local => PhotonNetwork.IsConnected? AllPlayers[LocalPlayer] : _offline;
+    private PlayerBehaviour _offline;
+    public PlayerBehaviour Local => PhotonNetwork.IsConnected? AllPlayers[LocalPlayer] : _offline;
     public Player MasterPlayer { get; private set; }
-    public NetworkPlayer Master => PhotonNetwork.IsConnected? AllPlayers[MasterPlayer] : _offline;
+    public PlayerBehaviour Master => PhotonNetwork.IsConnected? AllPlayers[MasterPlayer] : _offline;
 
     public static bool IsMasterOrOffline => PhotonNetwork.IsMasterClient || !PhotonNetwork.IsConnected;
 
-    public void RegisterNetworkPlayer(NetworkPlayer newPlayer)
+    public void RegisterNetworkPlayer(PlayerBehaviour newPlayer)
     {
         if (PhotonNetwork.IsConnected)
         {
@@ -29,20 +29,20 @@ public class PlayerManager : Singleton<PlayerManager>
         }
     }
 
-    private void UpdatePlayerReferences(params NetworkPlayer[] players) => UpdatePlayerReferences((IList<NetworkPlayer>)players);
-    private void UpdatePlayerReferences(IList<NetworkPlayer> players)
+    private void UpdatePlayerReferences(params PlayerBehaviour[] players) => UpdatePlayerReferences((IList<PlayerBehaviour>)players);
+    private void UpdatePlayerReferences(IList<PlayerBehaviour> players)
     {
         EnemyAgentFactory.Initialise(players);
     }
 
     public void UpdateAllClients()
     {
-        if (AllPlayers == null) AllPlayers = new Dictionary<Player, NetworkPlayer>();
+        if (AllPlayers == null) AllPlayers = new Dictionary<Player, PlayerBehaviour>();
         else AllPlayers.Clear();
 
 
-        NetworkPlayer[] playersInScene = FindObjectsOfType<NetworkPlayer>();
-        foreach (NetworkPlayer np in playersInScene)
+        PlayerBehaviour[] playersInScene = FindObjectsOfType<PlayerBehaviour>();
+        foreach (PlayerBehaviour np in playersInScene)
         {
             Player p = np.PhotonView.Owner;
             AllPlayers.Add(p, np);

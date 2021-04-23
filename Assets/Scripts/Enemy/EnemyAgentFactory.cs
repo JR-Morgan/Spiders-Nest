@@ -105,15 +105,18 @@ public static class EnemyAgentFactory
             return b;
         }
     }
-    private static EnemyBehaviour AttackTarget(Enemy enemy, float distance = 1f)
+
+    private static EnemyBehaviour AttackTarget(Enemy enemy, float distance = 5f)
     {
         return Action;
         BehaviourState Action(BehaviourState b)
         {
             if (FindNearestTarget(enemy.transform, b)
-                && b.nearestTarget.distance < distance)
+                && b.nearestTarget.distance < distance * ((int)enemy.ModelType + 1))
             {
                 enemy.Goal = b.nearestTarget.target;
+                enemy.StartAttacking();
+
                 b.shouldTerminate = true;
             }
             return b;
