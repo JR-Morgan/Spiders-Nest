@@ -1,0 +1,25 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="Leader Boards Styles.uss" />
+    <ui:VisualElement name="Root" style="align-items: center; flex-grow: 1; padding-bottom: 50px;">
+        <ui:VisualElement style="width: 75%; top: 75px;">
+            <ui:VisualElement style="margin-left: 0; margin-right: 0; margin-top: 0; margin-bottom: 25px;">
+                <ui:Label text="Leader Boards" display-tooltip-when-elided="true" name="Header" style="font-size: 48px; -unity-text-align: upper-center;" />
+            </ui:VisualElement>
+            <ui:VisualElement name="Cols" class="ItemContainer Cols" style="align-items: stretch; flex-direction: row; justify-content: space-around;">
+                <ui:VisualElement>
+                    <ui:Label text="Player Name" display-tooltip-when-elided="true" />
+                </ui:VisualElement>
+                <ui:VisualElement>
+                    <ui:Label text="Kills" display-tooltip-when-elided="true" />
+                </ui:VisualElement>
+                <ui:VisualElement>
+                    <ui:Label text="Levels Completed" display-tooltip-when-elided="true" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+            <ui:ScrollView name="Records" style="flex-grow: 1;">
+                <ui:Label text="Fetching Data..." display-tooltip-when-elided="true" style="-unity-text-align: upper-center; font-size: 18px; color: rgba(255, 255, 255, 255); margin-top: 50px;" />
+            </ui:ScrollView>
+        </ui:VisualElement>
+    </ui:VisualElement>
+    <ui:Button text="Back To Main Menu" display-tooltip-when-elided="true" name="Back" style="width: 300px; height: 50px; font-size: 22px; margin-bottom: 10px; position: relative; bottom: 20px; left: 20px;" />
+</ui:UXML>

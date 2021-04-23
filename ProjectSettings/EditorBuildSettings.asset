@@ -12,6 +12,9 @@ EditorBuildSettings:
     path: Assets/Scenes/Menus/PUN Menu.unity
     guid: 5df745ec2f8123049b1db60cddeaa1d7
   - enabled: 1
+    path: Assets/Scenes/Menus/Leaderboards.unity
+    guid: b7cb8b9e303223b48afa7c76cd72f087
+  - enabled: 1
     path: Assets/Scenes/Level 0.unity
     guid: 480d2c0680416214791d7f7d877b292d
   m_configObjects: {}

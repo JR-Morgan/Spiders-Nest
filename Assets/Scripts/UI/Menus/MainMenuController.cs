@@ -24,7 +24,9 @@ public class MainMenuController : MenuController
 
             optionRoot.Add(InitialiseOption("Single Player", () => CurrentMenu = singlePlayerMenu));
             optionRoot.Add(InitialiseOption("Multi Player", () => CurrentMenu = multiPlayerMenu));
-            optionRoot.Add(InitialiseOption("Options", () => Options())); //TODO 
+            optionRoot.Add(InitialiseOption("Leader Boards", () => {
+                StartAnimation(AnimState.Out, () => SceneManager.LoadScene(2));
+            }));
 
         }
 
@@ -67,15 +69,15 @@ public class MainMenuController : MenuController
 
     private void StartNewGame()
     {
-        StartAnimation(AnimState.Out, () => SceneManager.LoadScene(2));
+        StartAnimation(AnimState.Out, () => SceneManager.LoadScene(3));
     }
 
     private void Continue()
     {
-        StartAnimation(AnimState.Out, () => SceneManager.LoadScene(2));
+        StartAnimation(AnimState.Out, () => SceneManager.LoadScene(3));
     }
 
-    private void Options()
+    private void LeaderBoards()
     {
 
     }

@@ -1,0 +1,6 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="Leader Boards Styles.uss" />
+    <ui:VisualElement name="Root" style="padding-left: 15px; padding-right: 15px; padding-top: 2px; padding-bottom: 2px;">
+        <ui:VisualElement name="Container" class="ItemContainer" style="flex-direction: row; justify-content: space-around; min-width: 250px; padding-bottom: 1px; padding-top: 1px; flex-wrap: nowrap;" />
+    </ui:VisualElement>
+</ui:UXML>

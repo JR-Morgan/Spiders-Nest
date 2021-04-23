@@ -1,0 +1,47 @@
+#Cols {
+    height: 35px;
+    border-bottom-width: 3px;
+}
+
+.Cols > VisualElement > Label {
+    -unity-font-style: bold;
+    font-size: 22px;
+}
+
+.ItemContainer Label {
+    font-size: 15px;
+}
+
+.ItemContainer > VisualElement {
+    width: 200px;
+    height: 20px;
+    align-items: center;
+}
+
+.Me Label {
+    font-size: 16px;
+    -unity-font-style: bold;
+}
+
+.ItemContainer {
+    border-bottom-width: 1px;
+    border-left-color: rgba(0, 0, 0, 0.9);
+    border-right-color: rgba(0, 0, 0, 0.9);
+    border-top-color: rgba(0, 0, 0, 0.9);
+    border-bottom-color: rgba(0, 0, 0, 0.9);
+}
+
+.Me {
+    border-left-color: rgb(0, 0, 0);
+    border-right-color: rgb(0, 0, 0);
+    border-top-color: rgb(0, 0, 0);
+    border-bottom-color: rgb(0, 0, 0);
+    border-left-width: 2px;
+    border-right-width: 2px;
+    border-top-width: 2px;
+    border-bottom-width: 2px;
+}
+
+Label {
+    color: rgba(255, 255, 255, 255);
+}
