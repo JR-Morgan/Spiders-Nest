@@ -1,6 +1,8 @@
 using Photon.Pun;
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
@@ -8,6 +10,7 @@ using UnityEngine.SceneManagement;
 [RequireComponent(typeof(PhotonView), typeof(PlayerInventory))]
 public class PlayerBehaviour : MonoBehaviour
 {
+    public static event Action OnSerialisationReady;
     private const float DEFAULT_HEALTH = 100f;
 
 
@@ -34,12 +37,16 @@ public class PlayerBehaviour : MonoBehaviour
 
     public PhotonView PhotonView { get; private set; }
     public PlayerInventory Inventory { get; private set; }
+    public Camera Camera { get; private set; }
     public bool IsLocal => PhotonView.IsMine;
 
     private void Awake()
     {
         PhotonView = this.GetComponent<PhotonView>();
         Inventory = this.GetComponent<PlayerInventory>();
+        
+        this.RequireComponentInChildren(out Camera camera);
+        this.Camera = camera;
 
         PlayerManager.Instance.RegisterNetworkPlayer(this);
 
@@ -58,6 +65,11 @@ public class PlayerBehaviour : MonoBehaviour
         Restart();
     }
 
+    private void Start()
+    {
+        OnSerialisationReady?.Invoke();
+    }
+
     private void Restart()
     {
         Health = DEFAULT_HEALTH;
@@ -66,7 +78,87 @@ public class PlayerBehaviour : MonoBehaviour
 
     private void ShowDeathScreen()
     {
-        SceneManager.LoadScene(0);
+        SaveGame();
+        
+
+        SceneManager.LoadScene(0); //TODO Death screen
+        UnityEngine.Cursor.lockState = CursorLockMode.None;
+        //Destroy player
+        foreach (PlayerBehaviour player in FindObjectsOfType<PlayerBehaviour>())
+        {
+            Destroy(player.gameObject);
+        }
     }
+
+    public static void SaveGame()
+    {
+        BackendlessController.Instance.AddScore(System.Environment.UserName, EnemyManager.Instance.NumberOfKills, 0);
+
+        if (!PhotonNetwork.IsConnected)
+        {
+            EnemyManager.Instance.SerialiseEnemies();
+            DoorObserver.Instance.SerialiseLevel();
+            PlayerManager.Instance.Local.SerialisePlayer();
+        }
+    }
+
+
+    #region Serialisation
+    private static string PLAYER_STATE_PATH => Application.persistentDataPath + @"/playerState.json";
+
+    public void DeserialisePlayer()
+    {
+        try
+        {
+            string json = File.ReadAllText(PLAYER_STATE_PATH);
+            SetupPlayer(JsonUtility.FromJson<PlayerData>(json));
+        }
+        catch (Exception e)
+        {
+            Debug.LogError($"{e.Message}\n{e.StackTrace}", this);
+        }
+    }
+
+    private void SetupPlayer(PlayerData data)
+    {
+        this.transform.position = data.position;
+        this.transform.rotation = Quaternion.Euler(data.rotation);
+        this.Inventory.Money = data.money;
+        EnemyManager.Instance.NumberOfKills = data.kills;
+    }
+
+    public void SerialisePlayer()
+    {
+        string json = GetPlayerJSON();
+
+        if (!File.Exists(PLAYER_STATE_PATH)) File.Create(PLAYER_STATE_PATH).Dispose();
+        File.WriteAllText(PLAYER_STATE_PATH, json);
+    }
+
+    private string GetPlayerJSON()
+    {
+        PlayerData data = new PlayerData
+        {
+            position = transform.position,
+            rotation = transform.rotation.eulerAngles,
+            money = Inventory.Money,
+            kills = EnemyManager.Instance.NumberOfKills,
+        };
+
+        return JsonUtility.ToJson(data);
+    }
+
+    [Serializable]
+    private struct PlayerData
+    {
+        public Vector3 position;
+        public Vector3 rotation;
+        public float money;
+        public float health;
+        public int kills;
+    }
+
+
+    #endregion
 
 }

@@ -44,7 +44,13 @@ public class InteractableDisplay : VisualElement
     private void SetMessage() => label.text = Format(Prompt, Cost, Action);
     private static string Format(string prompt, string cost, string action)
     {
-        return $"Press {prompt} and\n spend {cost} to\n {action}";
+        string message = $"Press {prompt}";
+        if (!(string.IsNullOrEmpty(cost) || cost == "0"))
+        {
+            message += $" and\n spend {cost}";
+        }
+        message+=  $" to\n {action}";
+        return message;
     }
 
     private void Setup()

@@ -19,7 +19,6 @@ public class EnemySpawner : MonoBehaviourPun
     private float timeToSpawn;
 
     private TextMeshPro text;
-    private new Camera camera;
 
     private void Awake()
     {
@@ -28,7 +27,6 @@ public class EnemySpawner : MonoBehaviourPun
 
     private void Start()
     {
-        camera = PlayerManager.Instance.Local.GetComponentInChildren<Camera>();
         timeToSpawn = startTime;
     }
 
@@ -46,14 +44,14 @@ public class EnemySpawner : MonoBehaviourPun
             SpawnEnemys(spawnSize);
         }
         text.text = ((int)Mathf.Max(timeToSpawn, 0)).ToString();
-        text.transform.eulerAngles = new Vector3(0f, camera.transform.eulerAngles.y, 0f);
+        text.transform.eulerAngles = new Vector3(0f, PlayerManager.Instance.Local.Camera.transform.eulerAngles.y, 0f);
     }
 
     private void SpawnEnemys(int size)
     {
         for (int i = 0; i < size; i++)
         {
-            EnemyManager.Instance.CreateEnemy(transform.position);
+            EnemyManager.Instance.CreateEnemy(out _, transform.position);
         }
         timeToSpawn = spawnTime;
     }

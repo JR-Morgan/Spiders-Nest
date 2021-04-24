@@ -1,3 +1,4 @@
+using System;
 using System.Diagnostics;
 using UnityEngine;
 
@@ -8,6 +9,8 @@ using UnityEngine;
 public abstract class Singleton<T> : MonoBehaviour where T : Singleton<T>
 {
     #region Singleton
+    public static event Action OnInitialisation;
+
     private static T _instance;
     public static T Instance { get
         {
@@ -21,7 +24,7 @@ public abstract class Singleton<T> : MonoBehaviour where T : Singleton<T>
     /// <summary>
     /// True if the singleton has been initialised. Note this does not guarantee that <see cref="Instance"/> is not null (may be on exit).
     /// </summary>
-    public static bool IsInitialised { get; private set; } = false;
+    public static bool IsInitialised => _instance != null;
     public static bool TryGetInstance(out T singleton)
     {
         singleton = _instance;
@@ -37,9 +40,8 @@ public abstract class Singleton<T> : MonoBehaviour where T : Singleton<T>
         else
         {
             _instance = (T)this;
-            IsInitialised = true;
+            OnInitialisation?.Invoke();
         }
-
     }
     #endregion
 }

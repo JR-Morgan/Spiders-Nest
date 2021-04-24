@@ -1,97 +1,82 @@
+using System;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.Events;
 
+/// <summary>
+/// The class represents the state and behaviour of an enemy
+/// </summary>
 [SelectionBase]
 [RequireComponent(typeof(NavMeshAgent))]
 public class Enemy : ObservableMonoBehaviour<Enemy>
 {
-    private NavMeshAgent navAgent;
+    #region Enemy Model
 
 
-    #region Serialised Fields
-    [SerializeField]
-    private EnemyModel _model;
-    [SerializeField]
-    private float _health;
-    [SerializeField]
-    private Transform _goal;
-    [SerializeField]
-    private Collider attackCollider;
-    #endregion
-
-    #region Properties
-
-    [Observed]
-    public float Health { get => _health; set => _health = value; }
-    public float MaxHealth => EnemyModel.maxHealth;
-
-    public Transform Goal { get => _goal; set => _goal = value; }
-
-    /// <summary>The speed of the <see cref="NavMeshAgent"/> proportionate to its base speed</summary>
-    [Observed]
-    public float SpeedProportion
+    private EnemyModel _enemyModel;
+    public EnemyModel EnemyModel
     {
-        get => navAgent.speed / EnemyModel.movementSpeed;
-        set => navAgent.speed = EnemyModel.movementSpeed * value;
+        get => _enemyModel;
+        set => Initialise(_enemyModel);
     }
+
+    [SerializeField]
+    private EnemyType _modelType;
+    [Observed]
+    public EnemyType ModelType
+    {
+        get => _modelType;
+        set
+        {
+            _modelType = value;
+            if (RequiresReinitialisation)
+                Initialise(_modelType);
+        }
+    }
+    private bool RequiresReinitialisation => EnemyModel == null || EnemyModel.typeID != ModelType;
+    /// <summary><c>true</c> if <see cref="EnemyModel"/> has been initialised (i.e. not <c>null</c>)</summary>
+    public bool IsInitialised => EnemyModel == null; //TOOD not sure this is needed
+    #endregion
 
 
     #region Initialisation
 
-    /// <summary><c>true</c> if <see cref="EnemyModel"/> has been initialised (i.e. not <c>null</c>)</summary>
-    public bool IsInitialised => EnemyModel == null;
+    private void Initialise(EnemyType modelType, bool resetHealth = false) => Initialise(EnemyManager.Instance.GetModel(modelType), resetHealth);
 
-    [Observed]
-    public EnemyType ModelType
+    private void Initialise(EnemyModel model, bool resetHealth = false)
     {
-        get => EnemyModel.typeID;
-        set 
+        _enemyModel = model;
+        _modelType = _enemyModel.typeID;
+        if (resetHealth)
         {
-            if(EnemyModel == null || EnemyModel.typeID != value)
-                EnemyModel = EnemyManager.Instance.GetModel(value);
+            this.Health = model.maxHealth;
         }
-    }
-    public EnemyModel EnemyModel
-    {
-        get => _model;
-        set
-        {
-            _model = value;
-            Initialise(_model, _model.maxHealth); //Reinitialise to new model with max health
-        }
-    }
 
-    private void Initialise(EnemyModel enemyData, float health)
-    {
-        this._health = health;
-        this.navAgent.speed = enemyData.movementSpeed;
+        this.navAgent.speed = model.movementSpeed;
 
         transform.DestroyChildren();
-        Instantiate(enemyData.prefab, transform);
+        Instantiate(model.prefab, transform);
 
 
         float timeOfEvolve = 0f; ;
 
         if (PlayerManager.IsMasterOrOffline)
         {
-            timeOfEvolve = Random.value < EnemyModel.proababiltyToEvolve ? Time.time + enemyData.timeUntilEvolve : -1; //TODO add some small variation
+            timeOfEvolve = UnityEngine.Random.value < EnemyModel.proababiltyToEvolve ? Time.time + model.timeUntilEvolve : -1; //TODO add some small variation
         }
 
-        agent = EnemyAgentFactory.CreateAgent(this, enemyData.typeID, timeOfEvolve);
+        agent = EnemyAgentFactory.CreateAgent(this, model.typeID, timeOfEvolve);
 
     }
 
     #endregion
 
-    #endregion
 
     #region Unity Methods
     public void Awake()
     {
         navAgent = GetComponent<NavMeshAgent>();
-        if (_model != null) EnemyModel = _model;
-        else ModelType = default;
+        if (RequiresReinitialisation) Initialise(ModelType);
     }
 
     public void Start()
@@ -101,7 +86,8 @@ public class Enemy : ObservableMonoBehaviour<Enemy>
 
     #endregion
 
-    #region
+
+    #region Attacking
     public bool IsAttacking { get; private set; }
 
     private void EndAttack()
@@ -119,7 +105,15 @@ public class Enemy : ObservableMonoBehaviour<Enemy>
     }
     #endregion
 
-    #region Damage
+
+    #region Health and Damage
+
+    [SerializeField]
+    private float _health;
+    [Observed]
+    public float Health { get => _health; set => _health = value; }
+    public float MaxHealth => EnemyModel.maxHealth;
+
     public void AddDamage(float damage, PlayerBehaviour hitBy)
     {
         _health -= damage;
@@ -134,7 +128,6 @@ public class Enemy : ObservableMonoBehaviour<Enemy>
     }
 
 
-
     public UnityEvent<Enemy> OnDeath;
     public void Die()
     {
@@ -145,7 +138,22 @@ public class Enemy : ObservableMonoBehaviour<Enemy>
     }
     #endregion
 
+
     #region Enemy Behaviour
+
+    private Transform _goal;
+    /// <summary>The <see cref="Transform"/> destination of the <see cref="Enemy"/>'s <see cref="NavMeshAgent"/></summary>
+    public Transform Goal { get => _goal; set => _goal = value; }
+
+    /// <summary>The speed of the <see cref="NavMeshAgent"/> proportionate to its base speed</summary>
+    [Observed]
+    public float SpeedProportion
+    {
+        get => navAgent.speed / EnemyModel.movementSpeed;
+        set => navAgent.speed = EnemyModel.movementSpeed * value;
+    }
+
+    private NavMeshAgent navAgent;
     private EnemyAgent agent;
 
     /// <summary>
@@ -158,8 +166,15 @@ public class Enemy : ObservableMonoBehaviour<Enemy>
 
         agent.Act();
         if (_goal == null) return false;
-        
-        return this.navAgent.SetDestination(_goal.position);
+
+        bool r = this.navAgent.SetDestination(_goal.position);
+        if (this.navAgent.pathStatus != NavMeshPathStatus.PathComplete)
+        {
+            //This stops enemies spawning in unopened rooms (would be far more efficient to disable/enable spawner)
+            Die();
+            r = false;
+        }
+        return r;
     }
 
     private void Update()
@@ -170,4 +185,30 @@ public class Enemy : ObservableMonoBehaviour<Enemy>
         }
     }
     #endregion
+    
+
+    public void SetData(EnemyData data)
+    {
+        this.Health = data.health;
+        this.transform.position = data.position;
+        this.ModelType = data.modelType;
+    }
+
+    public EnemyData GetSerialisationData()
+    {
+        return new EnemyData()
+        {
+            health = this.Health,
+            position = transform.position,
+            modelType = this.ModelType,
+        };
+    }
+
+    [Serializable]
+    public struct EnemyData
+    {
+        public float health;
+        public Vector3 position;
+        public EnemyType modelType;
+    }
 }

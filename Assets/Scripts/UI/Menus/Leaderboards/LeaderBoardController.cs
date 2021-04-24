@@ -2,22 +2,10 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Networking;
 using UnityEngine.SceneManagement;
 using UnityEngine.UIElements;
 
-[Serializable]
-public class TableData
-{
-    public PlayerRecord[] data;
-}
 
-[Serializable]
-public class PlayerRecord
-{
-    public string Player_Name;
-    public int Total_Levels, Total_Kills;
-} 
 [RequireComponent(typeof(UIDocument))]
 public class LeaderBoardController : Singleton<LeaderBoardController>
 {
@@ -29,7 +17,6 @@ public class LeaderBoardController : Singleton<LeaderBoardController>
 
         GenerateReport();
     }
-
 
     private void GenerateReport()
     { 
@@ -44,7 +31,7 @@ public class LeaderBoardController : Singleton<LeaderBoardController>
 
         uiDocument.rootVisualElement.Q("Root").Add(report);
 
-        StartCoroutine(RecieveData(Populate));
+        StartCoroutine(BackendlessHelper.GetAll(Populate));
 
         void Populate(TableData data, string error)
         {
@@ -62,7 +49,8 @@ public class LeaderBoardController : Singleton<LeaderBoardController>
                 Debug.Log($"Received table data with {data.data.Length} elements", this);
                 foreach (PlayerRecord p in data.data)
                 {
-                    LeaderBoardRecord element = GenerateRecord(false, p.Player_Name, p.Total_Kills, p.Total_Levels);
+                    bool isMe = p.Player_Name == System.Environment.UserName;
+                    LeaderBoardRecord element = GenerateRecord(isMe, p.Player_Name, p.Total_Kills, p.Total_Levels);
 
                     report.Q<VisualElement>("Records").Add(element);
                 }
@@ -74,40 +62,8 @@ public class LeaderBoardController : Singleton<LeaderBoardController>
         }
     }
 
-    private IEnumerator RecieveData(Action<TableData, string> OnCompleteCallback)
-    {
-        Uri url = ConstructURL();
-        UnityWebRequest request = UnityWebRequest.Get(url);
-        yield return request.SendWebRequest(); 
-
-        if(request.result == UnityWebRequest.Result.ConnectionError)
-        {
-            Debug.LogWarning(request.error);
-        }
-        //Debug.Log(request.downloadHandler.text);
 
 
-        TableData tableRecords = null;
-        string error = "";
-        if (request.result == UnityWebRequest.Result.ConnectionError)
-        {
-            error = request.error;
-            Debug.Log(request.error);
-        }
-        else
-        {
-            tableRecords = JsonUtility.FromJson<TableData>("{\"data\":" + request.downloadHandler.text + "}");
-        }
-
-        OnCompleteCallback.Invoke(tableRecords, error);
-
-    }
-
-
-    private static Uri ConstructURL(string tableName = GlobalConstants.BACKENDLESS_LEADERBOARDS_TABLE, string apiKey = GlobalConstants.BACKENDLESS_API_KEY, string appID = GlobalConstants.BACKENDLESS_APP_ID)
-    {
-        return new Uri($@"https://eu-api.backendless.com/{appID}/{apiKey}/data/{tableName}");
-    }
 
     private LeaderBoardRecord GenerateRecord(bool isMe, params object[] values) => GenerateRecord(isMe, (IList<object>)values);
     private LeaderBoardRecord GenerateRecord(bool isMe, IList<object> values)
@@ -120,7 +76,7 @@ public class LeaderBoardController : Singleton<LeaderBoardController>
             Label label = new Label(v.ToString());
             if (isMe)
             {
-                label.style.fontSize = new StyleLength(label.style.fontSize.value.value + 2);
+                label.style.fontSize = new StyleLength(17);
             }
             parent.Add(label);;
             record.Container.Add(parent);
@@ -128,10 +84,11 @@ public class LeaderBoardController : Singleton<LeaderBoardController>
 
         if (isMe)
         {
-            record.style.borderTopWidth = 2f;
-            record.style.borderBottomWidth = 2f;
-            record.style.borderLeftWidth = 2f;
-            record.style.borderRightWidth = 2f;
+            record.Container.style.backgroundColor = new Color(0f, 0f, 0f, 0.25f);
+            record.Container.style.borderTopWidth = 2f;
+            record.Container.style.borderBottomWidth = 2f;
+            record.Container.style.borderLeftWidth = 2f;
+            record.Container.style.borderRightWidth = 2f;
         }
 
         return record;

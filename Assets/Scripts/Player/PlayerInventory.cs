@@ -6,7 +6,12 @@ public class PlayerInventory : MonoBehaviour
     [SerializeField]
     private float money;
 
-    public float Money => money;
+    public float Money { get => money;
+        set {
+            money = Mathf.Max(value, 0f);
+            OnValueChange.Invoke(Money);
+        }
+    }
 
     public UnityEvent<float> OnValueChange;
 

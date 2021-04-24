@@ -115,6 +115,7 @@ public static class EnemyAgentFactory
                 && b.nearestTarget.distance < distance * ((int)enemy.ModelType + 1))
             {
                 enemy.Goal = b.nearestTarget.target;
+                enemy.SpeedProportion = 1.2f;
                 enemy.StartAttacking();
 
                 b.shouldTerminate = true;

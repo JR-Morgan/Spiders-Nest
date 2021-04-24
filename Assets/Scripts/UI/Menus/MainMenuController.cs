@@ -7,7 +7,6 @@ using UnityEngine.UIElements;
 
 public class MainMenuController : MenuController
 {
-    private const string NAME_OF_GAME = "Veins of Hell";
 
     private MainMenuElement mainMenu;
     private MainMenuElement singlePlayerMenu;
@@ -19,7 +18,7 @@ public class MainMenuController : MenuController
 
         { //Main Menu
 
-            mainMenu = InitialiseNewElement(NAME_OF_GAME);
+            mainMenu = InitialiseNewElement(GlobalConstants.NAME_OF_GAME);
             VisualElement optionRoot = mainMenu.Q(OPTION_ROOT);
 
             optionRoot.Add(InitialiseOption("Single Player", () => CurrentMenu = singlePlayerMenu));
@@ -74,12 +73,18 @@ public class MainMenuController : MenuController
 
     private void Continue()
     {
-        StartAnimation(AnimState.Out, () => SceneManager.LoadScene(3));
+        StartAnimation(AnimState.Out, () => {
+            SceneManager.LoadScene(3);
+
+            PlayerBehaviour.OnSerialisationReady += () =>
+            {
+                EnemyManager.Instance.DeserialiseEnemies();
+                DoorObserver.Instance.DeserialiseLevel();
+                PlayerManager.Instance.Local.DeserialisePlayer();
+            };
+
+        });
     }
 
-    private void LeaderBoards()
-    {
-
-    }
 
 }

@@ -1,6 +1,7 @@
 using Photon.Pun;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 
 public class DoorObserver : MonoBehaviourPun
@@ -58,7 +59,7 @@ public class DoorObserver : MonoBehaviourPun
                 }
                 else
                 {
-                    UnityEngine.Debug.LogError($"{typeof(DoorObserver)} could not find a state for {ToVector3Int(door.WallParent)}({key}). {DoorStates.Count} doors known about", this);
+                    UnityEngine.Debug.LogWarning($"{typeof(DoorObserver)} could not find a state for {ToVector3Int(door.WallParent)}({key}). {DoorStates.Count} doors known about", this);
                 }
             }
         }
@@ -193,6 +194,74 @@ public class DoorObserver : MonoBehaviourPun
         }
     }
 
+    #region Serialisation
+    private static string DOOR_STATE_PATH => Application.persistentDataPath + @"/doorState.json";
+    
+    public void DeserialiseLevel()
+    {
+        try
+        {
+            string json = File.ReadAllText(DOOR_STATE_PATH);
+            SetupDoors(JsonUtility.FromJson<LevelData>(json).data);
+        }
+        catch (Exception e)
+        {
+            Debug.LogError($"{e.Message}\n{e.StackTrace}", this);
+        }
+    }
+
+    private void SetupDoors(IEnumerable<DoorState> data)
+    {
+        Dictionary<string, bool> doorStates = new Dictionary<string, bool>();
+        foreach(DoorState doorstate in data)
+        {
+            doorStates.Add(doorstate.name, doorstate.state);
+        }
+        this.DoorStates = doorStates;
+        this.UpdateDoors();
+    }
+
+    public void SerialiseLevel()
+    {
+        string json = GetDoorJSON();
+
+        if (!File.Exists(DOOR_STATE_PATH)) File.Create(DOOR_STATE_PATH).Dispose();
+        File.WriteAllText(DOOR_STATE_PATH, json);
+    }
+
+    private string GetDoorJSON()
+    {
+        DoorState[] data = new DoorState[DoorStates.Count];
+        int i = 0;
+        foreach(string name in DoorStates.Keys)
+        {
+            data[i] = new DoorState()
+            {
+                name = name,
+                state = DoorStates[name],
+            };
+            i++;
+        }
+
+        LevelData levelData = new LevelData() { data = data };
+
+        return JsonUtility.ToJson(levelData);
+    }
+
+    [Serializable]
+    private struct LevelData
+    {
+        public DoorState[] data;
+    }
+
+    [Serializable]
+    private struct DoorState
+    {
+        public string name;
+        public bool state;
+    }
+
+    #endregion
 
 
 }

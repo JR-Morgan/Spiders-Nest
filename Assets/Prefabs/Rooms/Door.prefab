@@ -58,7 +58,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 337881d96ab7b17488bd7068113364dd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _cost: 10
+  _cost: 100
   keycode: 101
 --- !u!1 &1997168943757777786
 GameObject:

@@ -23,6 +23,7 @@ public class HudController : MonoBehaviour
         { // Kills
             HudTextField kills = new HudTextField("Enemies Killed:", "0");
             EnemyManager.Instance.OnEnemyDeath.AddListener((e,n) => kills.Value = n.ToString());
+            kills.Value = EnemyManager.Instance.NumberOfKills.ToString();
             container.Add(kills);
         }
 

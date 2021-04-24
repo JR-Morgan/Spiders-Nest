@@ -1,8 +1,10 @@
 using Photon.Pun;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 using UnityEngine.Events;
+using static Enemy;
 
 /// <summary>
 /// The <see cref="EnemyManager"/> singleton manages the updating of <see cref="Enemy"/> components.
@@ -36,6 +38,7 @@ public class EnemyManager : Singleton<EnemyManager>
     [SerializeField]
     [Tooltip("The number of enemies killed this game.")]
     private int numberOfKills;
+    public int NumberOfKills { get => numberOfKills; set => numberOfKills = value; }
     #endregion
 
     /// <summary>A list of all (alive) <see cref="Enemy"/> instances managed by this <see cref="EnemyManager"/></summary>
@@ -47,10 +50,6 @@ public class EnemyManager : Singleton<EnemyManager>
 
     protected override void Awake()
     {
-        base.Awake();
-
-        FindAndRegisterEnemiesInScene();
-
         //Enemy Types Validation
         {
             Debug.Assert(enemyModels.Length >= Enum.GetNames(typeof(EnemyType)).Length, $"{nameof(enemyModels)} is missing some {typeof(EnemyType)}s", this);
@@ -60,6 +59,13 @@ public class EnemyManager : Singleton<EnemyManager>
                 Debug.Assert(enemyModels[i].movementSpeed > 0, $"{ nameof(EnemyModel.movementSpeed)} at index {i}\n({enemyModels[i]}) was <= zero (was this intentional?)", this);
             }
         }
+
+        if (Enemies == null) Enemies = new List<Enemy>();
+        else Enemies.Clear();
+
+        base.Awake();
+
+        //FindAndRegisterEnemiesInScene();
     }
 
     /// <summary>
@@ -67,9 +73,6 @@ public class EnemyManager : Singleton<EnemyManager>
     /// </summary>
     private void FindAndRegisterEnemiesInScene(bool includeInactive = false)
     {
-        if (Enemies == null) Enemies = new List<Enemy>();
-        else Enemies.Clear();
-
         foreach (Enemy enemy in FindObjectsOfType<Enemy>(includeInactive))
         {
             Enemies.Add(enemy);
@@ -101,7 +104,6 @@ public class EnemyManager : Singleton<EnemyManager>
 
     #region Factory methods
 
-    public bool CreateEnemy(Vector3 position, EnemyType enemyType = default) => CreateEnemy(position, Quaternion.identity, enemyType);
 
     /// <summary>
     /// Creates a new instance of <see cref="enemyPrefab"/> if the following condition is <c>true</c>.<br/>
@@ -114,7 +116,7 @@ public class EnemyManager : Singleton<EnemyManager>
     /// <remarks>
     /// Will use <see cref="PhotonNetwork"/> to instantiate if <see cref="PhotonNetwork.IsMasterClient"/>.<br/>
     /// </remarks>
-    public bool CreateEnemy(Vector3 position, Quaternion rotation, EnemyType enemyType = default)
+    public bool CreateEnemy(out Enemy enemy, Vector3 position, Quaternion rotation, EnemyType enemyType = default)
     {
         GameObject enemyGameObject;
         if (!PhotonNetwork.IsConnected)
@@ -127,16 +129,26 @@ public class EnemyManager : Singleton<EnemyManager>
         }
         else
         {
+            enemy = null;
             return false;
         }
 
         //Client side only setup (some of which gets observed and sent to other clients)
         enemyGameObject.layer = enemyLayer.ToLayerNumber();
-        Enemy enemy = enemyGameObject.GetComponent<Enemy>();
+        enemy = enemyGameObject.GetComponent<Enemy>();
         enemy.OnDeath.AddListener(e => OnEnemyDeath.Invoke(e, ++numberOfKills)); //It might be worth removing this listener on UnregisterEnemy
         enemy.ModelType = enemyType;
 
         return true;
+    }
+    public bool CreateEnemy(out Enemy enemy, Vector3 position, EnemyType enemyType = default) => CreateEnemy(out enemy, position, Quaternion.identity, enemyType);
+
+    public bool CreateEnemy(out Enemy enemy, Vector3 position, Quaternion rotation, EnemyType enemyType, float health)
+    {
+        bool r = CreateEnemy(out enemy, position, rotation, enemyType);
+        enemy.Health = health;
+
+        return r;
     }
 
     #endregion
@@ -189,5 +201,61 @@ public class EnemyManager : Singleton<EnemyManager>
         return true;
     }
 
+    #endregion
+
+
+    #region Serialisation
+
+    private static string ENEMY_STATE_PATH => Application.persistentDataPath + @"/enemyState.json";
+
+    public void DeserialiseEnemies()
+    {
+        try
+        {
+            string json = File.ReadAllText(ENEMY_STATE_PATH);
+            SetupEnemies(JsonUtility.FromJson<EnemyWrapper>(json).data);
+        }
+        catch (Exception e)
+        {
+            Debug.LogError($"{e.Message}\n{e.StackTrace}", this);
+        }
+    }
+
+    private void SetupEnemies(IEnumerable<EnemyData> data)
+    {
+        foreach(EnemyData enemyData in data)
+        {
+            CreateEnemy(out _, enemyData.position, Quaternion.identity, enemyData.modelType, enemyData.health);
+        }
+    }
+
+
+    public void SerialiseEnemies()
+    {
+        string json = GetEnemyJSON();
+
+        if (!File.Exists(ENEMY_STATE_PATH)) File.Create(ENEMY_STATE_PATH).Dispose();
+        File.WriteAllText(ENEMY_STATE_PATH, json);
+    }
+
+    private string GetEnemyJSON()
+    {
+        EnemyData[] data = new EnemyData[Enemies.Count];
+        for(int i = 0; i < Enemies.Count; i++)
+        {
+            data[i] = Enemies[i].GetSerialisationData();
+        }
+        EnemyWrapper enemyData = new EnemyWrapper() {data = data};
+
+        return JsonUtility.ToJson(enemyData);
+    }
+
+
+
+    [Serializable]
+    private struct EnemyWrapper
+    {
+        public EnemyData[] data;
+    }
     #endregion
 }

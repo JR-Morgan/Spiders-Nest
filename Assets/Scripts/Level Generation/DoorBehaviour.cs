@@ -63,17 +63,23 @@ public class DoorBehaviour : MonoBehaviour, IInteractable
         else Debug.LogError($"Could not find {typeof(NavMeshSurface)}", this);
     }
 
-    private void BuyEventHandler()
+    private void BuyEventHandler(Interactor interactor)
     {
-        DoorObserver.Instance.ChangeDoorState(this, false);
 
-        OnHoverEnd();
+        if (interactor.TryGetComponent(out PlayerInventory inventory)
+        && inventory.TrySubtract(_cost))
+        {
+            DoorObserver.Instance.ChangeDoorState(this, false);
+            OnHoverEnd();
+        }
+
+
     }
 
     public void OnHoverStart(Interactor interactor)
     {
         document.rootVisualElement.Add(display);
-        interactor.AddKeyListener(keycode, BuyEventHandler);
+        interactor.AddKeyListener(keycode, () => BuyEventHandler(interactor));
     }
 
     public void OnHoverEnd(Interactor interactor = null)
