@@ -41,7 +41,7 @@ public class Enemy : ObservableMonoBehaviour<Enemy>
 
     #region Initialisation
 
-    private void Initialise(EnemyType modelType, bool resetHealth = false) => Initialise(EnemyManager.Instance.GetModel(modelType), resetHealth);
+    public void Initialise(EnemyType modelType, bool resetHealth = false) => Initialise(EnemyManager.Instance.GetModel(modelType), resetHealth);
 
     private void Initialise(EnemyModel model, bool resetHealth = false)
     {
@@ -58,11 +58,12 @@ public class Enemy : ObservableMonoBehaviour<Enemy>
         Instantiate(model.prefab, transform);
 
 
-        float timeOfEvolve = 0f; ;
+        float timeOfEvolve = 0f;
 
         if (PlayerManager.IsMasterOrOffline)
         {
-            timeOfEvolve = UnityEngine.Random.value < EnemyModel.proababiltyToEvolve ? Time.time + model.timeUntilEvolve : -1; //TODO add some small variation
+            float time = Time.time + model.timeUntilEvolve + UnityEngine.Random.Range(-2, 2);
+            timeOfEvolve = UnityEngine.Random.value < EnemyModel.proababiltyToEvolve ? time : -1;
         }
 
         agent = EnemyAgentFactory.CreateAgent(this, model.typeID, timeOfEvolve);
@@ -76,7 +77,7 @@ public class Enemy : ObservableMonoBehaviour<Enemy>
     public void Awake()
     {
         navAgent = GetComponent<NavMeshAgent>();
-        if (RequiresReinitialisation) Initialise(ModelType);
+        if (RequiresReinitialisation) Initialise(ModelType, resetHealth: ModelType == default);
     }
 
     public void Start()
@@ -119,11 +120,13 @@ public class Enemy : ObservableMonoBehaviour<Enemy>
         _health -= damage;
         if (_health <= 0)
         {
+            if (this.TryGetComponent(out AudioSource a)) a.Play();
+
             if (hitBy.TryGetComponent(out PlayerInventory inventory))
             {
                 inventory.AddUnchecked(5 * (int)ModelType + 10);
             }
-            Invoke(nameof(Die), 0.001f); //Small delay to destroy on next frame
+            Invoke(nameof(Die), 0.0f); //Small delay to destroy on next frame
         }
     }
 
@@ -183,6 +186,8 @@ public class Enemy : ObservableMonoBehaviour<Enemy>
         {
             PlayerManager.Instance.Local.Health -= EnemyModel.damage * Time.deltaTime;
         }
+
+        Tick();
     }
     #endregion
     

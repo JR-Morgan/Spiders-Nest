@@ -70,7 +70,16 @@ public class PlayerManager : Singleton<PlayerManager>
 
     public void PlayerDisconnectHandler(Player left)
     {
-        UpdateAllClients(); //Might need to wait till next frame here
+        if (left.IsMasterClient)
+        {
+            Debug.Log("Master client left the game, disconnecting from room");
+            PhotonNetwork.Disconnect();
+            LevelSwitchoverManager.LoadScene(false, 0, CursorLockMode.None, typeof(PlayerBehaviour));
+        }
+        else
+        {
+            UpdateAllClients(); //Might need to wait till next frame here
+        }
     }
 
     #region Serialise Fields

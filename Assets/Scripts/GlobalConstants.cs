@@ -4,7 +4,7 @@ using UnityEngine;
 
 public static class GlobalConstants
 {
-    public const string NAME_OF_GAME = "The Spiders Nest";
+    public const string NAME_OF_GAME = "The Spider's Nest";
 
     #region Backendless
     public const string BACKENDLESS_API_KEY = "10A46934-5211-4347-AB84-55DD6B408541";

@@ -29,8 +29,8 @@ public class BackendlessController : Singleton<BackendlessController>
 {
     protected override void Awake()
     {
-        DontDestroyOnLoad(this);
         base.Awake();
+        DontDestroyOnLoad(this);
     }
 
     public void AddScore(string playerName, int killsToAdd, int levelsToAdd)
@@ -211,29 +211,6 @@ public class BackendlessHelper
     /// <param name="record"></param>
     /// <returns></returns>
     /// <remarks>Designed to run as a <see cref="Coroutine"/></remarks>
-    public static IEnumerator oldPostRecord(PostPlayerRecord record)
-    {
-        string uri = ConstructURL();
-
-        //For some reason backendless is having troubling understanding this JSON format so a dictionary works for now
-        string data = JsonUtility.ToJson(record); 
-        //Dictionary<string, string> data = new Dictionary<string, string>() { {"Player_Name", record.Player_Name}, { "Total_Kills", record.Total_Kills.ToString() }, { "Total_Levels", record.Total_Levels.ToString() } };
-        Debug.Log(data);
-
-        using UnityWebRequest request = UnityWebRequest.Post(uri, data);
-        request.SetRequestHeader("Content-Type", "application/json");
-
-        LogRequest(request);
-        yield return request.SendWebRequest();
-
-        if (request.result != UnityWebRequest.Result.Success)
-        {
-            Debug.LogWarning(request.error + "\n" + request.result);
-        }
-    }
-    #endregion
-
-
     public static IEnumerator PostRecord(PostPlayerRecord record)
     {
         string uri = ConstructURL();
@@ -252,6 +229,10 @@ public class BackendlessHelper
             Debug.LogWarning(request.error);
         }
     }
+
+    #endregion
+
+
 
 
 }

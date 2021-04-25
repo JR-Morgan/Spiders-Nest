@@ -3,7 +3,7 @@
     <ui:VisualElement name="Root" style="align-items: center; flex-grow: 1; padding-bottom: 50px;">
         <ui:VisualElement style="width: 75%; top: 75px;">
             <ui:VisualElement style="margin-left: 0; margin-right: 0; margin-top: 0; margin-bottom: 25px;">
-                <ui:Label text="Leader Boards" display-tooltip-when-elided="true" name="Header" style="font-size: 48px; -unity-text-align: upper-center;" />
+                <ui:Label text="Leaderboard" display-tooltip-when-elided="true" name="Header" style="font-size: 48px; -unity-text-align: upper-center;" />
             </ui:VisualElement>
             <ui:VisualElement name="Cols" class="ItemContainer Cols" style="align-items: stretch; flex-direction: row; justify-content: space-around;">
                 <ui:VisualElement>

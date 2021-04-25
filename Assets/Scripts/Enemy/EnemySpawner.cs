@@ -44,7 +44,9 @@ public class EnemySpawner : MonoBehaviourPun
             SpawnEnemys(spawnSize);
         }
         text.text = ((int)Mathf.Max(timeToSpawn, 0)).ToString();
-        text.transform.eulerAngles = new Vector3(0f, PlayerManager.Instance.Local.Camera.transform.eulerAngles.y, 0f);
+
+        if(PlayerManager.IsInitialised && PlayerManager.Instance.Local != null && PlayerManager.Instance.Local.Camera != null)
+            text.transform.eulerAngles = new Vector3(0f, PlayerManager.Instance.Local.Camera.transform.eulerAngles.y, 0f);
     }
 
     private void SpawnEnemys(int size)

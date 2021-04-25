@@ -15,6 +15,12 @@ EditorBuildSettings:
     path: Assets/Scenes/Menus/Leaderboards.unity
     guid: b7cb8b9e303223b48afa7c76cd72f087
   - enabled: 1
-    path: Assets/Scenes/Level 0.unity
+    path: Assets/Scenes/Level Managers.unity
     guid: 480d2c0680416214791d7f7d877b292d
+  - enabled: 1
+    path: Assets/Scenes/Levels/Level 1.unity
+    guid: 97ccf915315b5a04388e987f2c2b533e
+  - enabled: 1
+    path: Assets/Scenes/Levels/Level 2.unity
+    guid: d60162a1c35083c4f8711de6a16ddf97
   m_configObjects: {}

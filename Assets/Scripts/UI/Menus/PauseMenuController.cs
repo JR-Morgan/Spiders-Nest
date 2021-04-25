@@ -82,18 +82,6 @@ public class PauseMenuController : MenuController
         _currentMenu.SetEnabled(false);
         Debug.Log("Exiting to main");
 
-        //Save State
-        PlayerBehaviour.SaveGame();
-
-        //Change Scene
-        SceneManager.LoadScene(0);
-        Time.timeScale = 1;
-        UnityEngine.Cursor.lockState = CursorLockMode.None;
-        //Destroy player
-        foreach (PlayerBehaviour player in FindObjectsOfType<PlayerBehaviour>())
-        {
-            Destroy(player.gameObject);
-        }
-        
+        LevelSwitchoverManager.LoadScene(false, 0, CursorLockMode.None, typeof(PlayerBehaviour));
     }
 }

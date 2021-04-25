@@ -43,7 +43,6 @@ public class DoorBehaviour : MonoBehaviour, IInteractable
     private void Awake()
     {
         this.RequireComponentInParents(out wallParent);
-        document = FindObjectOfType<UIDocument>();
         display = new InteractableDisplay();
         display.SetMessage(
             cost: _cost.ToString(),
@@ -51,6 +50,12 @@ public class DoorBehaviour : MonoBehaviour, IInteractable
             action: "Open Door"
             );
     }
+
+    private void Start()
+    {
+        document = FindObjectOfType<UIDocument>();
+    }
+
 
 
     private void OnDisable()
@@ -69,15 +74,15 @@ public class DoorBehaviour : MonoBehaviour, IInteractable
         if (interactor.TryGetComponent(out PlayerInventory inventory)
         && inventory.TrySubtract(_cost))
         {
-            DoorObserver.Instance.ChangeDoorState(this, false);
+            if (this.TryGetComponentInParents(out AudioSource a)) a.Play();
+            LevelStateManager.Instance.ChangeDoorState(this, false);
             OnHoverEnd();
         }
-
-
     }
 
     public void OnHoverStart(Interactor interactor)
     {
+        if(document == null) document = FindObjectOfType<UIDocument>();
         document.rootVisualElement.Add(display);
         interactor.AddKeyListener(keycode, () => BuyEventHandler(interactor));
     }

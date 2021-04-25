@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UIElements;
 
 [RequireComponent(typeof(Collider))]
@@ -22,7 +23,6 @@ public class ChestInteractable : MonoBehaviour, IInteractable
 
     private void Awake()
     {
-        document = FindObjectOfType<UIDocument>();
         display = new InteractableDisplay();
 
         display.SetMessage(
@@ -30,6 +30,11 @@ public class ChestInteractable : MonoBehaviour, IInteractable
             prompt: keycode.ToString(),
             action: "Complete Level"
             );
+    }
+
+    private void Start()
+    {
+        document = FindObjectOfType<UIDocument>();
     }
 
     public void OnHoverEnd(Interactor interactor = null)
@@ -48,13 +53,15 @@ public class ChestInteractable : MonoBehaviour, IInteractable
         if (interactor.TryGetComponent(out PlayerInventory inventory)
             && inventory.TrySubtract(_cost))
         {
-            //Level Win!
 
-            BackendlessController.Instance.AddScore(System.Environment.UserName, EnemyManager.Instance.NumberOfKills, 1);
-
+            OnOpen.Invoke();
 
             OnHoverEnd();
+
+            Destroy(this.gameObject);
         }
     }
+
+    public UnityEvent OnOpen;
 
 }

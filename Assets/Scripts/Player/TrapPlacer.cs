@@ -170,11 +170,12 @@ public class TrapPlacer : MonoBehaviour
 
         GameObject placedGameObject = InstantiateActive(pos, rot);
         SetupLocalTrap(placedGameObject);
-
     }
 
     private void SetupLocalTrap(GameObject go)
     {
+        if (go.TryGetComponentInChildren(out AudioSource a)) a.Play();
+
         if (go.TryGetComponentInChildren(out AOEDamage aoeDamage, true))
         {
             aoeDamage.Damage = ActiveAction.damage;
@@ -185,7 +186,7 @@ public class TrapPlacer : MonoBehaviour
     {   
         foreach (Renderer r in placingObject.GetComponentsInChildren<Renderer>())
         {
-            r.material.SetColor("_Color", color); //TODO set colour properly
+            r.material.SetColor("_Color", color);
         }
     }
 

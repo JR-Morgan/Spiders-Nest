@@ -17,3 +17,10 @@ Label {
     -unity-font: resource('Fonts & Materials/DellaRespira-Regular');
     text-shadow: 0 0 7px rgb(0, 0, 0);
 }
+
+#OptionRoot > * {
+    font-size: 32px;
+    align-items: center;
+    flex-grow: 1;
+    margin-bottom: 0;
+}

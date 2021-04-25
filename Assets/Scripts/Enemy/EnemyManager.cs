@@ -7,9 +7,7 @@ using UnityEngine.Events;
 using static Enemy;
 
 /// <summary>
-/// The <see cref="EnemyManager"/> singleton manages the updating of <see cref="Enemy"/> components.
-/// Each <see cref="Update"/>, A specified proportion  (see <see cref="updateProportion"/>) of <see cref="Enemies"/>
-/// are updated through <see cref="Enemy.Tick"/><br/>
+/// The <see cref="EnemyManager"/> singleton manages the creation and deletion of <see cref="Enemy"/> components.
 /// </summary>
 public class EnemyManager : Singleton<EnemyManager>
 {
@@ -28,11 +26,6 @@ public class EnemyManager : Singleton<EnemyManager>
     [SerializeField]
     [Tooltip("Specify evolution order of " + nameof(EnemyModel) + ".\nensure list is ordered such that element 0 is the initial state and " + nameof(EnemyType) + " matches the " + nameof(EnemyModel.typeID))]
     private EnemyModel[] enemyModels;
-
-    [SerializeField]
-    [Range(0f, 1f)]
-    [Tooltip("The proportion of enemies to be updated each "+ nameof(Update) +"(). Lower values increase performance but can lead to enemies that are slow to respond.")]
-    private float updateProportion;
 
     [Header("Read only")]
     [SerializeField]
@@ -64,6 +57,8 @@ public class EnemyManager : Singleton<EnemyManager>
         else Enemies.Clear();
 
         base.Awake();
+
+
 
         //FindAndRegisterEnemiesInScene();
     }
@@ -161,29 +156,6 @@ public class EnemyManager : Singleton<EnemyManager>
     public UnityEvent<Enemy, int> OnEnemyDeath;
     #endregion
 
-    #region Updates
-
-    /// <summary>The last index in the <see cref="Enemies"/> list that was updated</summary>
-    private int updateOffset;
-
-    public void Update()
-    {
-        int amountToUpdate = (int)(Enemies.Count * updateProportion);
-        if (Enemies.Count > 0)
-        {
-            int counter = 0;
-            while(counter++ != amountToUpdate && Enemies.Count > counter)
-            {
-                Enemy enemy = Enemies[(counter + updateOffset) % Enemies.Count];
-                enemy.Tick();
-            }
-
-            updateOffset += counter;
-        }
-    }
-    #endregion
-
-
     #region Evolution
 
 
@@ -196,8 +168,8 @@ public class EnemyManager : Singleton<EnemyManager>
     {
         int targetType = (int)enemy.EnemyModel.typeID + 1;
         if (targetType >= Enum.GetNames(typeof(EnemyType)).Length) return false;
-        
-        ReinitialiseWithType(enemy, (EnemyType)targetType);
+
+        enemy.Initialise((EnemyType)targetType, true);
         return true;
     }
 
@@ -208,22 +180,25 @@ public class EnemyManager : Singleton<EnemyManager>
 
     private static string ENEMY_STATE_PATH => Application.persistentDataPath + @"/enemyState.json";
 
-    public void DeserialiseEnemies()
+    public bool DeserialiseEnemies()
     {
         try
         {
             string json = File.ReadAllText(ENEMY_STATE_PATH);
             SetupEnemies(JsonUtility.FromJson<EnemyWrapper>(json).data);
+            return true;
         }
         catch (Exception e)
         {
             Debug.LogError($"{e.Message}\n{e.StackTrace}", this);
+            return false;
         }
     }
 
     private void SetupEnemies(IEnumerable<EnemyData> data)
     {
-        foreach(EnemyData enemyData in data)
+        if (data == null) return;
+        foreach (EnemyData enemyData in data)
         {
             CreateEnemy(out _, enemyData.position, Quaternion.identity, enemyData.modelType, enemyData.health);
         }

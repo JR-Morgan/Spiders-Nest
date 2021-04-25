@@ -2,15 +2,18 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Audio;
 using UnityEngine.SceneManagement;
 using UnityEngine.UIElements;
 
 public class MainMenuController : MenuController
 {
+    [SerializeField]
+    private AudioMixer masterMixer;
 
     private MainMenuElement mainMenu;
     private MainMenuElement singlePlayerMenu;
-    private MainMenuElement multiPlayerMenu;
+    private MainMenuElement optionsMenu;
 
     protected override void Awake()
     {
@@ -22,8 +25,9 @@ public class MainMenuController : MenuController
             VisualElement optionRoot = mainMenu.Q(OPTION_ROOT);
 
             optionRoot.Add(InitialiseOption("Single Player", () => CurrentMenu = singlePlayerMenu));
-            optionRoot.Add(InitialiseOption("Multi Player", () => CurrentMenu = multiPlayerMenu));
-            optionRoot.Add(InitialiseOption("Leader Boards", () => {
+            optionRoot.Add(InitialiseOption("Multi Player", () => SceneManager.LoadScene(1)));
+            optionRoot.Add(InitialiseOption("Options", () => CurrentMenu = optionsMenu));
+            optionRoot.Add(InitialiseOption("Leaderboard", () => {
                 StartAnimation(AnimState.Out, () => SceneManager.LoadScene(2));
             }));
 
@@ -35,18 +39,39 @@ public class MainMenuController : MenuController
             VisualElement optionRoot = singlePlayerMenu.Q(OPTION_ROOT);
 
             optionRoot.Add(InitialiseOption("New Game", () => StartNewGame()));
-            optionRoot.Add(InitialiseOption("Continue Last", () => Continue())); //TODO 
+            optionRoot.Add(InitialiseOption("Continue Last", () => Continue()));
             optionRoot.Add(InitialiseOption("Back to Main Menu", () => CurrentMenu = mainMenu));
         }
 
-        { //Multi Player
+        { //Options
+            
 
-            multiPlayerMenu = InitialiseNewElement("Multi Player");
-            VisualElement optionRoot = multiPlayerMenu.Q(OPTION_ROOT);
+            optionsMenu = InitialiseNewElement("Options");
+            VisualElement optionRoot = optionsMenu.Q(OPTION_ROOT);
 
-            optionRoot.Add(InitialiseOption("Photon Servers", () => {
-                StartAnimation(AnimState.Out, () => SceneManager.LoadScene(1));
-                }));
+            Slider sfxSlider = new Slider("SFX Volume : ", -80f, 10f);
+            optionRoot.Add(sfxSlider);
+            sfxSlider.RegisterCallback<ChangeEvent<float>>(e =>
+            {
+                masterMixer.SetFloat("SFX", e.newValue);
+            });
+
+            Slider musicSlider = new Slider("Music Volume : ", -80f, 10f);
+            optionRoot.Add(musicSlider);
+            musicSlider.RegisterCallback<ChangeEvent<float>>(e =>
+            {
+                masterMixer.SetFloat("Music", e.newValue);
+            });
+
+            Toggle fullScreen = new Toggle("Full-screen : ");
+            optionRoot.Add(fullScreen);
+            fullScreen.value = Screen.fullScreen;
+            fullScreen.RegisterCallback<ChangeEvent<bool>>(e =>
+            {
+                Screen.fullScreen = e.newValue;
+            });
+
+
             optionRoot.Add(InitialiseOption("Back to Main Menu", () => CurrentMenu = mainMenu));
 
         }
@@ -68,20 +93,35 @@ public class MainMenuController : MenuController
 
     private void StartNewGame()
     {
-        StartAnimation(AnimState.Out, () => SceneManager.LoadScene(3));
+        StartAnimation(AnimState.Out, () => SceneManager.LoadScene("Level 1"));
     }
 
     private void Continue()
     {
         StartAnimation(AnimState.Out, () => {
-            SceneManager.LoadScene(3);
-
-            PlayerBehaviour.OnSerialisationReady += () =>
+            if(LevelSwitchoverManager.DeserialiseLevel(out int level))
             {
-                EnemyManager.Instance.DeserialiseEnemies();
-                DoorObserver.Instance.DeserialiseLevel();
-                PlayerManager.Instance.Local.DeserialisePlayer();
-            };
+                SceneManager.LoadScene(level);
+
+                PlayerBehaviour.OnSerialisationReady += () =>
+                {
+                    bool successful =
+                    EnemyManager.Instance.DeserialiseEnemies()
+                    && LevelStateManager.Instance.DeserialiseLevel()
+                    && PlayerManager.Instance.Local.DeserialisePlayer();
+
+                    if (!successful)
+                    {
+                        Debug.LogError("Game save was corrupted");
+                    }
+                };
+
+            }
+            else
+            {
+                SceneManager.LoadScene("Level 1");
+            }
+
 
         });
     }

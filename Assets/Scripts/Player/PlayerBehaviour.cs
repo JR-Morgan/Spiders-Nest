@@ -17,12 +17,16 @@ public class PlayerBehaviour : MonoBehaviour
     public UnityEvent OnDeath;
     public UnityEvent<float> OnHealthChange;
 
+    private float proababilityToPlayHitOnDamage = 0.03f;
+    private AudioSource audioSource;
+
     [SerializeField]
     private float _health;
     public float Health {
         get => _health;
         set
         {
+            if (_health > value && UnityEngine.Random.value < proababilityToPlayHitOnDamage) audioSource.Play();
             _health = value;
             if (_health <= 0)
             {
@@ -44,7 +48,8 @@ public class PlayerBehaviour : MonoBehaviour
     {
         PhotonView = this.GetComponent<PhotonView>();
         Inventory = this.GetComponent<PlayerInventory>();
-        
+        audioSource = this.GetComponent<AudioSource>();
+
         this.RequireComponentInChildren(out Camera camera);
         this.Camera = camera;
 
@@ -60,7 +65,8 @@ public class PlayerBehaviour : MonoBehaviour
         }
         else
         {
-            OnDeath.AddListener(ShowDeathScreen);
+            //TODO change to load death screen
+            OnDeath.AddListener(() => LevelSwitchoverManager.LoadScene(false, 0, CursorLockMode.None, typeof(PlayerBehaviour)));
         }
         Restart();
     }
@@ -76,46 +82,22 @@ public class PlayerBehaviour : MonoBehaviour
         transform.position = Vector3.zero;
     }
 
-    private void ShowDeathScreen()
-    {
-        SaveGame();
-        
-
-        SceneManager.LoadScene(0); //TODO Death screen
-        UnityEngine.Cursor.lockState = CursorLockMode.None;
-        //Destroy player
-        foreach (PlayerBehaviour player in FindObjectsOfType<PlayerBehaviour>())
-        {
-            Destroy(player.gameObject);
-        }
-    }
-
-    public static void SaveGame()
-    {
-        BackendlessController.Instance.AddScore(System.Environment.UserName, EnemyManager.Instance.NumberOfKills, 0);
-
-        if (!PhotonNetwork.IsConnected)
-        {
-            EnemyManager.Instance.SerialiseEnemies();
-            DoorObserver.Instance.SerialiseLevel();
-            PlayerManager.Instance.Local.SerialisePlayer();
-        }
-    }
-
 
     #region Serialisation
-    private static string PLAYER_STATE_PATH => Application.persistentDataPath + @"/playerState.json";
+    public static string PLAYER_STATE_PATH => Application.persistentDataPath + @"/playerState.json";
 
-    public void DeserialisePlayer()
+    public bool DeserialisePlayer()
     {
         try
         {
             string json = File.ReadAllText(PLAYER_STATE_PATH);
             SetupPlayer(JsonUtility.FromJson<PlayerData>(json));
+            return true;
         }
         catch (Exception e)
         {
             Debug.LogError($"{e.Message}\n{e.StackTrace}", this);
+            return false;
         }
     }
 

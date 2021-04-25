@@ -12,7 +12,7 @@ public class PUNManager : MonoBehaviourPunCallbacks
     [SerializeField]
     private string gameVersion = "1.0";
     [SerializeField]
-    private string levelToLoad = "Level 0";
+    private string levelToLoad = "Level 1";
 
     void Awake()
     {
