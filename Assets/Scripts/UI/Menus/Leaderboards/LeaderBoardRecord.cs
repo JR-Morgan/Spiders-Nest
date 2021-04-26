@@ -4,6 +4,9 @@ using System.Reflection;
 using UnityEngine;
 using UnityEngine.UIElements;
 
+/// <summary>
+/// <see cref="VisualElement"/> for a single leaderboard record
+/// </summary>
 public class LeaderBoardRecord : VisualElement
 {
     private static readonly VisualTreeAsset view = Resources.Load<VisualTreeAsset>($@"UI/Menus/Leader Board/{nameof(LeaderBoardRecord)}");
@@ -12,7 +15,6 @@ public class LeaderBoardRecord : VisualElement
     public VisualElement Container { get; private set; }
 
     #endregion
-
 
 
     public void Setup()
@@ -25,9 +27,7 @@ public class LeaderBoardRecord : VisualElement
         Add(view.CloneTree());
         void GeometryChange(GeometryChangedEvent evt)
         {
-            //this.UnregisterCallback<GeometryChangedEvent>(GeometryChange);
             Setup();
-            //this.RegisterCallback<GeometryChangedEvent>(GeometryChange);
         }
 
         this.RegisterCallback<GeometryChangedEvent>(GeometryChange);

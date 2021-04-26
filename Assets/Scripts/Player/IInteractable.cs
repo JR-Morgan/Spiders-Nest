@@ -1,5 +1,4 @@
 
-
 public interface IInteractable 
 {
     void OnHoverEnd(Interactor interactor);

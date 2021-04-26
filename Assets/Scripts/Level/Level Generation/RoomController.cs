@@ -1,6 +1,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Encapsulates a rooms ability to change <see cref="RoomType"/> during level design
+/// </summary>
 [SelectionBase]
 [ExecuteInEditMode]
 public class RoomController : MonoBehaviour
@@ -18,6 +21,8 @@ public class RoomController : MonoBehaviour
     [SerializeField]
     private List<WallController> _walls;
     public List<WallController> Walls { get => _walls; set => _walls = value; }
+
+    //Disabled because it was causing some problems with build (uncomment when a creating a new level
 
 //#if UNITY_EDITOR
 //    private void OnValidate()

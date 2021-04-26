@@ -1,8 +1,9 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
 
+/// <summary>
+/// UI Controller for setting up HUD <see cref="HudTextField"/>s
+/// </summary>
 [RequireComponent(typeof(UIDocument))]
 public class HudController : MonoBehaviour
 {

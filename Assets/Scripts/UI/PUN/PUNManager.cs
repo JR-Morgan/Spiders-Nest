@@ -1,12 +1,14 @@
 using Photon.Pun;
 using Photon.Realtime;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
+/// <summary>
+/// Manages the behaviour of creating and joining <see cref="Photon"/> rooms and connection to the <see cref="Photon"/> servers
+/// </summary>
 public class PUNManager : MonoBehaviourPunCallbacks
 {
+    /// <summary>Singleton reference</summary>
     public static PUNManager Instance { get; private set; }
 
     [SerializeField]
@@ -16,6 +18,7 @@ public class PUNManager : MonoBehaviourPunCallbacks
 
     void Awake()
     {
+        //Singleton initialisation
         if (Instance != null)
         {
             Destroy(this);
@@ -23,6 +26,7 @@ public class PUNManager : MonoBehaviourPunCallbacks
         }
 
         Instance = this;
+
 
         PhotonNetwork.AutomaticallySyncScene = true;
         DontDestroyOnLoad(this.gameObject);
@@ -35,7 +39,11 @@ public class PUNManager : MonoBehaviourPunCallbacks
         PhotonNetwork.Disconnect();
     }
 
-
+    /// <summary>
+    /// If <see cref="PhotonNetwork.IsConnected"/> will request to join the specified <paramref name="roomID"/>
+    /// </summary>
+    /// <param name="roomID">ID of room</param>
+    /// <returns><c>true</c> if the room was successful joined; otherwise, <c>false</c></returns>
     public bool JoinRoom(string roomID)
     {
         if (PhotonNetwork.IsConnected)
@@ -52,11 +60,16 @@ public class PUNManager : MonoBehaviourPunCallbacks
         return success;
     }
 
-    public bool CreateNewRoom(string roomName = null)
+    /// <summary>
+    /// If <see cref="PhotonNetwork.IsConnected"/> will request for a new room to be created with the specified <paramref name="roomID"/>
+    /// </summary>
+    /// <param name="roomID"></param>
+    /// <returns><c>true</c> if the room was successful created; otherwise, <c>false</c></returns>
+    public bool CreateNewRoom(string roomID = null)
     {
         if (PhotonNetwork.IsConnected)
         {
-            if(PhotonNetwork.CreateRoom(roomName, new RoomOptions()))
+            if(PhotonNetwork.CreateRoom(roomID, new RoomOptions()))
             {
                 return true;
             }

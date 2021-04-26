@@ -1,9 +1,10 @@
-using System.Collections;
-using System.Collections.Generic;
 using System.Reflection;
 using UnityEngine;
 using UnityEngine.UIElements;
 
+/// <summary>
+/// <see cref="VisualElement"/> for displaying a leaderboard
+/// </summary>
 public class LeaderBoardReport : VisualElement
 {
     private static readonly VisualTreeAsset view = Resources.Load<VisualTreeAsset>($@"UI/Menus/Leader Board/{nameof(LeaderBoardReport)}");
@@ -15,8 +16,6 @@ public class LeaderBoardReport : VisualElement
     public VisualElement Records { get; private set; }
 
     #endregion
-
-
 
     public void Setup()
     {
@@ -33,14 +32,6 @@ public class LeaderBoardReport : VisualElement
     public LeaderBoardReport()
     {
         Add(view.CloneTree());
-        //void GeometryChange(GeometryChangedEvent evt)
-        //{
-        //    this.UnregisterCallback<GeometryChangedEvent>(GeometryChange);
-        //    Setup();
-        //    //this.RegisterCallback<GeometryChangedEvent>(GeometryChange);
-        //}
-
-        //this.RegisterCallback<GeometryChangedEvent>(GeometryChange);
     }
 
     #region UXML Factory

@@ -3,16 +3,17 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using UnityEngine;
 
 /// <summary>
-/// Properties of subclasses with the <see cref="ObservedAttribute"/> will be synced with PUN clients
+/// This class is a generic implementation of the <see cref="IPunObservable"/> interface.<br/>
+/// Properties of subclasses with the <see cref="ObservedAttribute"/> will be synced with PUN clients.
 /// </summary>
 /// <typeparam name="T"></typeparam>
 public abstract class ObservableMonoBehaviour<T> : MonoBehaviourPun, IPunObservable where T : ObservableMonoBehaviour<T>
 {
     /// <summary><c>true</c> if this object should sync properties</summary>
     protected bool isSending = true;
+
 
     public virtual void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
     {

@@ -1,5 +1,8 @@
 using UnityEngine;
 
+/// <summary>
+/// <see cref="MonoBehaviour"/> for instantiating new levels during level design
+/// </summary>
 [ExecuteInEditMode]
 public class NewLevelGenerator : MonoBehaviour
 {

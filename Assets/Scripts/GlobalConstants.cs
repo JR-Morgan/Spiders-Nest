@@ -1,7 +1,6 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
+/// <summary>
+/// Stores global constants
+/// </summary>
 public static class GlobalConstants
 {
     public const string NAME_OF_GAME = "The Spider's Nest";

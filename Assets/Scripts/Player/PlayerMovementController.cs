@@ -1,6 +1,4 @@
 using Photon.Pun;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(CharacterController))]
@@ -24,8 +22,6 @@ public class PlayerMovementController : MonoBehaviour
                 return;
             }
         }
-
-       
     }
 
 
@@ -37,7 +33,6 @@ public class PlayerMovementController : MonoBehaviour
         Vector3 move = transform.right * x + transform.forward * z;
 
         controller.Move(move * speed * Time.deltaTime);
-        
 
     }
 }

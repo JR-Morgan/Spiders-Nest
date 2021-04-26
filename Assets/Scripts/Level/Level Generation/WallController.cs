@@ -1,8 +1,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Encapsulates a walls ability to change <see cref="WallType"/> during level design
+/// </summary>
 [SelectionBase]
-//[ExecuteInEditMode]
+[ExecuteInEditMode]
 public class WallController : MonoBehaviour
 {
     [SerializeField]
@@ -25,7 +28,7 @@ public class WallController : MonoBehaviour
 
     public void Awake()
     {
-        //Some times (I don't know why) _x and _y get reset to default (0) even though they are serialised (ExecuteInEditModeAttribute ?) so this uses the objects name
+        //For some reason (I don't know why) _x and _y get reset to default (0) even though they are serialised (ExecuteInEditModeAttribute ?) so this uses the objects name
         //To set the X and Y back again (not ideal but works for now)
         if (_x == 0 && _y == 0)
         {
@@ -36,6 +39,8 @@ public class WallController : MonoBehaviour
         string[] group = this.transform.parent.name.Split(' ');
         this.Group = int.Parse(group[2]);
     }
+
+    //Disabled because it was causing some problems when building the level
 
 //#if UNITY_EDITOR
 //    private void OnValidate()

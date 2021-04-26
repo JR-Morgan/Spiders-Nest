@@ -1,24 +1,29 @@
 using Photon.Pun;
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 using UnityEngine.Events;
-using UnityEngine.SceneManagement;
 
+/// <summary>
+/// Encapsulates the players state 
+/// </summary>
 [RequireComponent(typeof(PhotonView), typeof(PlayerInventory))]
-public class PlayerBehaviour : MonoBehaviour
+public class PlayerState : MonoBehaviour
 {
+    /// <summary>Triggered when the player is safe to serialise</summary>
     public static event Action OnSerialisationReady;
-    private const float DEFAULT_HEALTH = 100f;
 
+    public PhotonView PhotonView { get; private set; }
+    public PlayerInventory Inventory { get; private set; }
+    public Camera Camera { get; private set; }
+    public bool IsLocal => PhotonView.IsMine;
+
+    #region Health
+    private const float DEFAULT_HEALTH = 100f;
 
     public UnityEvent OnDeath;
     public UnityEvent<float> OnHealthChange;
 
-    private float proababilityToPlayHitOnDamage = 0.03f;
-    private AudioSource audioSource;
 
     [SerializeField]
     private float _health;
@@ -38,11 +43,13 @@ public class PlayerBehaviour : MonoBehaviour
             }
         }
     }
+    #endregion
 
-    public PhotonView PhotonView { get; private set; }
-    public PlayerInventory Inventory { get; private set; }
-    public Camera Camera { get; private set; }
-    public bool IsLocal => PhotonView.IsMine;
+    #region Audio
+    private float proababilityToPlayHitOnDamage = 0.03f;
+    private AudioSource audioSource;
+    #endregion
+
 
     private void Awake()
     {
@@ -58,7 +65,6 @@ public class PlayerBehaviour : MonoBehaviour
 
         DontDestroyOnLoad(this.gameObject);
 
-
         if(PhotonNetwork.IsConnected)
         {
             OnDeath.AddListener(Restart);
@@ -66,7 +72,7 @@ public class PlayerBehaviour : MonoBehaviour
         else
         {
             //TODO change to load death screen
-            OnDeath.AddListener(() => LevelSwitchoverManager.LoadScene(false, 0, CursorLockMode.None, typeof(PlayerBehaviour)));
+            OnDeath.AddListener(() => LevelSwitchoverManager.LoadScene(false, 0, CursorLockMode.None, typeof(PlayerState)));
         }
         Restart();
     }

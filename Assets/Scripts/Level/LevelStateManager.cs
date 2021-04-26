@@ -4,6 +4,9 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 
+/// <summary>
+/// Manages the state of Doors and Traps for serialisation and Photon networking
+/// </summary>
 public class LevelStateManager : MonoBehaviourPun
 {
     #region Singleton
@@ -34,6 +37,25 @@ public class LevelStateManager : MonoBehaviourPun
     }
     #endregion
 
+    private void Awake()
+    {
+        SetupSingleton();
+    }
+
+    private void Start()
+    {
+        if (PlayerManager.IsMasterOrOffline)
+        {
+            RegisterWallsInScene();
+        }
+        else
+        {
+            this.photonView.RPC(nameof(SyncRequestHandler), RpcTarget.MasterClient);
+        }
+    }
+
+    #region Door state Networking
+    //false is open
     private Dictionary<string, bool> _doorStates;
 
     [Observed]
@@ -56,6 +78,13 @@ public class LevelStateManager : MonoBehaviourPun
                 if (DoorStates.ContainsKey(key))
                 {
                     door.gameObject.SetActive(DoorStates[key]);
+                    if (!DoorStates[key])
+                    {
+                        foreach (RoomController room in door.WallParent.Rooms)
+                        {
+                            if (room.TryGetComponentInChildren(out EnemySpawner spawner)) spawner.enabled = true;
+                        }
+                    }
                 }
                 else
                 {
@@ -73,17 +102,6 @@ public class LevelStateManager : MonoBehaviourPun
             
         return new Vector3Int(wallController.X, wallController.Y, wallController.Group);
     }
-    /*private static int ToKey(WallController wallController)
-    {
-        byte[] key = new byte[]
-        {
-            Convert.ToByte(wallController.X),
-            Convert.ToByte(wallController.Y),
-            Convert.ToByte(wallController.Group),
-            0,
-        };
-        return BitConverter.ToInt32(key, 0);
-    }*/
 
     private static string ToKey(WallController wallController) => ToVector3Int(wallController).ToString();
     private void RegisterWallsInScene()
@@ -110,23 +128,6 @@ public class LevelStateManager : MonoBehaviourPun
         UpdateClients();
     }
 
-
-    private void Awake()
-    {
-        SetupSingleton();
-    }
-
-    private void Start()
-    {
-        if (PlayerManager.IsMasterOrOffline)
-        {
-            RegisterWallsInScene();
-        }
-        else
-        {
-            this.photonView.RPC(nameof(SyncRequestHandler), RpcTarget.MasterClient);
-        }
-    }
 
     public void ChangeDoorState(DoorBehaviour door, bool state) => ChangeDoorState(ToKey(door.WallParent), state);
     public void ChangeDoorState(string key, bool state)
@@ -193,6 +194,8 @@ public class LevelStateManager : MonoBehaviourPun
             UpdateDoors();
         }
     }
+
+#endregion
 
     #region Serialisation
     private static string DOOR_STATE_PATH => Application.persistentDataPath + @"/doorState.json";

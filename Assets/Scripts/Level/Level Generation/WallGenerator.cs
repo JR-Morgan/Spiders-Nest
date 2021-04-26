@@ -1,6 +1,9 @@
 using UnityEditor;
 using UnityEngine;
 
+/// <summary>
+/// Class for generating hexagonal wall groups
+/// </summary>
 public static class WallGenerator
 {
 

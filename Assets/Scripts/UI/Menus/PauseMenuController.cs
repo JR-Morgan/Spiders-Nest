@@ -1,10 +1,10 @@
 using Photon.Pun;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using UnityEngine.UIElements;
 
+/// <summary>
+/// Implementation of <see cref="MenuController"/> for a pause menu
+/// </summary>
 public class PauseMenuController : MenuController
 {
     private const string CONTAINER_ELEMENT_NAME = "PauseMenuContainer";
@@ -82,6 +82,6 @@ public class PauseMenuController : MenuController
         _currentMenu.SetEnabled(false);
         Debug.Log("Exiting to main");
 
-        LevelSwitchoverManager.LoadScene(false, 0, CursorLockMode.None, typeof(PlayerBehaviour));
+        LevelSwitchoverManager.LoadScene(false, 0, CursorLockMode.None, typeof(PlayerState));
     }
 }

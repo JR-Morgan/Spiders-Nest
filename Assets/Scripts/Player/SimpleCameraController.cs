@@ -9,7 +9,9 @@ using UnityEngine;
 
 namespace UnityTemplateProjects
 {
-    
+    /// <summary>
+    /// This class is a from Unity Scene Samples and has been slightly modified 
+    /// </summary>
     public class SimpleCameraController : MonoBehaviour
     {
         private new Camera camera;

@@ -1,5 +1,8 @@
 using UnityEngine;
 
+/// <summary>
+/// Encapsulates parameters associated with a specific <see cref="EnemyModel"/>
+/// </summary>
 [CreateAssetMenu(fileName = "New Enemy Model", menuName = nameof(ScriptableObject) + "/" + nameof(EnemyModel), order = 1)]
 public class EnemyModel : ScriptableObject
 {
@@ -20,5 +23,5 @@ public enum EnemyType
     Small,
     Medium,
     Big,
-    Deamon,
+    SuperBig,
 }

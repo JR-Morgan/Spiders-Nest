@@ -52,7 +52,7 @@ public class Enemy : ObservableMonoBehaviour<Enemy>
             this.Health = model.maxHealth;
         }
 
-        this.navAgent.speed = model.movementSpeed;
+        this.NavAgent.speed = model.movementSpeed;
 
         transform.DestroyChildren();
         Instantiate(model.prefab, transform);
@@ -76,7 +76,7 @@ public class Enemy : ObservableMonoBehaviour<Enemy>
     #region Unity Methods
     public void Awake()
     {
-        navAgent = GetComponent<NavMeshAgent>();
+        NavAgent = GetComponent<NavMeshAgent>();
         if (RequiresReinitialisation) Initialise(ModelType, resetHealth: ModelType == default);
     }
 
@@ -115,7 +115,7 @@ public class Enemy : ObservableMonoBehaviour<Enemy>
     public float Health { get => _health; set => _health = value; }
     public float MaxHealth => EnemyModel.maxHealth;
 
-    public void AddDamage(float damage, PlayerBehaviour hitBy)
+    public void AddDamage(float damage, PlayerState hitBy)
     {
         _health -= damage;
         if (_health <= 0)
@@ -132,10 +132,12 @@ public class Enemy : ObservableMonoBehaviour<Enemy>
 
 
     public UnityEvent<Enemy> OnDeath;
-    public void Die()
+    public void Die(bool invokeDeath = true)
     {
         EnemyManager.Instance.UnregisterEnemy(this);
-        OnDeath.Invoke(this);
+
+        if(invokeDeath)
+            OnDeath.Invoke(this);
 
         Destroy(this.gameObject);
     }
@@ -144,40 +146,26 @@ public class Enemy : ObservableMonoBehaviour<Enemy>
 
     #region Enemy Behaviour
 
-    private Transform _goal;
-    /// <summary>The <see cref="Transform"/> destination of the <see cref="Enemy"/>'s <see cref="NavMeshAgent"/></summary>
-    public Transform Goal { get => _goal; set => _goal = value; }
 
     /// <summary>The speed of the <see cref="NavMeshAgent"/> proportionate to its base speed</summary>
     [Observed]
     public float SpeedProportion
     {
-        get => navAgent.speed / EnemyModel.movementSpeed;
-        set => navAgent.speed = EnemyModel.movementSpeed * value;
+        get => NavAgent.speed / EnemyModel.movementSpeed;
+        set => NavAgent.speed = EnemyModel.movementSpeed * value;
     }
 
-    private NavMeshAgent navAgent;
+    public NavMeshAgent NavAgent { get; private set; }
     private EnemyAgent agent;
 
     /// <summary>
     /// Updates the <see cref="Enemy"/> through <see cref="EnemyAgent.Act"/>
     /// </summary>
-    /// <returns><c>false</c> if the <see cref="Enemy"/> was unable to update; otherwise, <c>false</c></returns>
-    public bool Tick()
+    public void Tick()
     {
-        if (!navAgent.isOnNavMesh) return false;
+        if (!NavAgent.isOnNavMesh) return;
 
         agent.Act();
-        if (_goal == null) return false;
-
-        bool r = this.navAgent.SetDestination(_goal.position);
-        if (this.navAgent.pathStatus != NavMeshPathStatus.PathComplete)
-        {
-            //This stops enemies spawning in unopened rooms (would be far more efficient to disable/enable spawner)
-            Die();
-            r = false;
-        }
-        return r;
     }
 
     private void Update()

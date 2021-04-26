@@ -1,32 +1,16 @@
-using System.Reflection;
 using UnityEngine;
 using UnityEngine.UIElements;
 
+/// <summary>
+/// Implementation of <see cref="MenuController"/> for a menu container
+/// </summary>
 public class MainMenuElement : VisualElement
 {
     private static readonly VisualTreeAsset view = Resources.Load<VisualTreeAsset>(@"UI/Menus/MainMenu");
 
-
-
-
-
-
-
-    private void Setup()
-    {
-
-    }
-
     public MainMenuElement()
     {
         Add(view.CloneTree());
-        void GeometryChange(GeometryChangedEvent evt)
-        {
-            this.UnregisterCallback<GeometryChangedEvent>(GeometryChange);
-            Setup();
-        }
-
-        this.RegisterCallback<GeometryChangedEvent>(GeometryChange);
     }
 
     #region UXML Factory

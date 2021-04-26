@@ -1,10 +1,11 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UIElements;
 
+/// <summary>
+/// UI controller for <see cref="ActionType"/> selection and action
+/// </summary>
 [RequireComponent(typeof(UIDocument))]
 public class ActionController : Singleton<ActionController>
 {

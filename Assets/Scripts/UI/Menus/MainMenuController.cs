@@ -1,11 +1,12 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 using UnityEngine.Audio;
 using UnityEngine.SceneManagement;
 using UnityEngine.UIElements;
 
+/// <summary>
+/// This class controls the setup and functionality of the Main Menu scene.
+/// </summary>
 public class MainMenuController : MenuController
 {
     [SerializeField]
@@ -39,8 +40,14 @@ public class MainMenuController : MenuController
             VisualElement optionRoot = singlePlayerMenu.Q(OPTION_ROOT);
 
             optionRoot.Add(InitialiseOption("New Game", () => StartNewGame()));
-            optionRoot.Add(InitialiseOption("Continue Last", () => Continue()));
+            var continueLast = InitialiseOption("Continue Last", () => Continue());
+            optionRoot.Add(continueLast);
             optionRoot.Add(InitialiseOption("Back to Main Menu", () => CurrentMenu = mainMenu));
+
+            //Disable continue option if no save exists.
+            continueLast.SetEnabled(File.Exists(PlayerState.PLAYER_STATE_PATH));
+
+
         }
 
         { //Options
@@ -82,7 +89,7 @@ public class MainMenuController : MenuController
     {
         base.Start();
 
-        documentRoot.Add(mainMenu);
+        documentParent.Add(mainMenu);
         _currentMenu = mainMenu;
 
         StartAnimation(AnimState.In,
@@ -103,7 +110,7 @@ public class MainMenuController : MenuController
             {
                 SceneManager.LoadScene(level);
 
-                PlayerBehaviour.OnSerialisationReady += () =>
+                PlayerState.OnSerialisationReady += () =>
                 {
                     bool successful =
                     EnemyManager.Instance.DeserialiseEnemies()

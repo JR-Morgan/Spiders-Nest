@@ -5,9 +5,12 @@ using System.IO;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
+/// <summary>
+/// This Singleton manager controls the switching of scenes during gameplay (i.e. within a game level) either to another game level or to menus.<br/>
+/// </summary>
 public class LevelSwitchoverManager : Singleton<LevelSwitchoverManager>
 {
-    private const int CREDITS_INDEX = 0;
+    private const int CREDITS_SCENE_INDEX = 0;
 
     protected override void Awake()
     {
@@ -33,15 +36,16 @@ public class LevelSwitchoverManager : Singleton<LevelSwitchoverManager>
         chestsToWin--;
         if(chestsToWin <= 0)
         {
-            //WIN GAME!
+            Debug.Log("Game win!");
             int level = SceneManager.GetActiveScene().buildIndex + 1;
             if(level >= SceneManager.sceneCountInBuildSettings)
             {
-                LoadScene(true, CREDITS_INDEX, CursorLockMode.None, typeof(PlayerBehaviour));
+                LoadScene(true, CREDITS_SCENE_INDEX, CursorLockMode.None, typeof(PlayerState));
 
-                if (File.Exists(PlayerBehaviour.PLAYER_STATE_PATH))
+                if (File.Exists(PlayerState.PLAYER_STATE_PATH))
                 {
-                    File.Delete(PlayerBehaviour.PLAYER_STATE_PATH);
+                    //Delete game save to prevent save being continued.
+                    File.Delete(PlayerState.PLAYER_STATE_PATH);
                 }
             }
             else

@@ -1,8 +1,10 @@
 using System.Collections.Generic;
-using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
 
+/// <summary>
+/// <see cref="VisualElement"/> for a HUD <see cref="ActionType"/>
+/// </summary>
 public class ActionElement : VisualElement
 {
     private static readonly VisualTreeAsset view = Resources.Load<VisualTreeAsset>(@"UI/Views/ActionView");

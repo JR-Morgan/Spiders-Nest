@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
 
+/// <summary>
+/// A custom <see cref="VisualElement"/> that allows user to enter and submit a Photon network room ID.
+/// </summary>
 public class RoomField : VisualElement
 {
     private static readonly VisualTreeAsset view = Resources.Load<VisualTreeAsset>(@"UI/Menus/RoomField");
@@ -14,7 +17,7 @@ public class RoomField : VisualElement
 
     #endregion
 
-    #region events
+    #region Events
     public event Action OnSubmit;
     #endregion
 

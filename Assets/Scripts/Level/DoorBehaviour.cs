@@ -2,10 +2,14 @@ using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.UIElements;
 
+/// <summary>
+/// Implementation of <see cref="IInteractable"/> for an door that can be opened by the player with a cost
+/// </summary>
 [RequireComponent(typeof(Collider))]
 public class DoorBehaviour : MonoBehaviour, IInteractable
 {
     private const KeyCode DEFAULT_KEY = KeyCode.E;
+
     #region Serialised Fields
     [Tooltip("The players cost of opening the door")]
     [SerializeField]
@@ -16,19 +20,18 @@ public class DoorBehaviour : MonoBehaviour, IInteractable
 
     private UIDocument document;
     private InteractableDisplay display;
-    private WallController wallParent;
+
+    private WallController _wallParent;
+    /// <summary>The <see cref="WallController"/> that is parent to this <see cref="DoorBehaviour"/></summary>
     public WallController WallParent
     {
         get
         {
-            if (wallParent == null) wallParent = GetComponentInParent<WallController>();
-            return wallParent;
+            if (_wallParent == null) _wallParent = GetComponentInParent<WallController>();
+            return _wallParent;
 
         }
     }
-
-
-
 
     public float Cost
     {
@@ -42,7 +45,7 @@ public class DoorBehaviour : MonoBehaviour, IInteractable
 
     private void Awake()
     {
-        this.RequireComponentInParents(out wallParent);
+        this.RequireComponentInParents(out _wallParent);
         display = new InteractableDisplay();
         display.SetMessage(
             cost: _cost.ToString(),

@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
 
+/// <summary>
+/// <see cref="VisualElement"/> for an intractable object's (e.g. <see cref="DoorBehaviour"/> action display.
+/// </summary>
 public class InteractableDisplay : VisualElement
 {
     private static readonly VisualTreeAsset view = Resources.Load<VisualTreeAsset>(@"UI/Views/InteractableDisplay");

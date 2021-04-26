@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -33,6 +32,12 @@ public class BackendlessController : Singleton<BackendlessController>
         DontDestroyOnLoad(this);
     }
 
+    /// <summary>
+    /// Updates the backendless record by adding the sepcified <paramref name="killsToAdd"/> and <paramref name="levelsToAdd"/>
+    /// </summary>
+    /// <param name="playerName">The identifying name of the client</param>
+    /// <param name="killsToAdd">Number of kills to add</param>
+    /// <param name="levelsToAdd">Nunber of levels to add</param>
     public void AddScore(string playerName, int killsToAdd, int levelsToAdd)
     {
         this.StartCoroutine(BackendlessHelper.GetRecord(BackendlessHelper.URIByName(playerName), (player, errors) =>
@@ -57,11 +62,6 @@ public class BackendlessController : Singleton<BackendlessController>
         }));
     }
 
-    /// <summary>
-    /// Same as <see cref="PlayerRecord"/> but no object id
-    /// </summary>
-
-
 }
 
 
@@ -75,7 +75,7 @@ public class BackendlessHelper
 
 
     #region Helper Methods
-    private static string ConstructURL(string tableName = GlobalConstants.BACKENDLESS_LEADERBOARDS_TABLE, string apiKey = GlobalConstants.BACKENDLESS_API_KEY, string appID = GlobalConstants.BACKENDLESS_APP_ID, string objectID = null)
+    internal static string ConstructURL(string tableName = GlobalConstants.BACKENDLESS_LEADERBOARDS_TABLE, string apiKey = GlobalConstants.BACKENDLESS_API_KEY, string appID = GlobalConstants.BACKENDLESS_APP_ID, string objectID = null)
     {
         string uriString = $@"https://eu-api.backendless.com/{appID}/{apiKey}/data/{tableName}";
 
@@ -85,9 +85,8 @@ public class BackendlessHelper
         return uriString;
     }
 
-    public static string URIByName(string name) => $"{ConstructURL()}?where=Player_Name%20%3D%20%27{name}%27";
-    public static string URIByID(string objectID) => ConstructURL(objectID: objectID);
-
+    internal static string URIByName(string name) => $"{ConstructURL()}?where=Player_Name%20%3D%20%27{name}%27";
+    internal static string URIByID(string objectID) => ConstructURL(objectID: objectID);
 
     #endregion
 

@@ -1,6 +1,9 @@
 using UnityEngine;
 using UnityEngine.Events;
 
+/// <summary>
+/// Encapsulates a players Money and transactions
+/// </summary>
 public class PlayerInventory : MonoBehaviour
 {
     [SerializeField]
@@ -30,7 +33,6 @@ public class PlayerInventory : MonoBehaviour
         AddUnchecked(amount);
         return true;
     }
-
 
     public void SubtractUnchecked(float amount) => AddUnchecked(-amount);
     public void AddUnchecked(float amount)

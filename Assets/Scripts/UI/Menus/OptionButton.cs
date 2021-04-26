@@ -1,8 +1,10 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
 
+/// <summary>
+/// <see cref="VisualElement"/> for a main menu button
+/// </summary>
 public class OptionButton : VisualElement
 {
     private static readonly VisualTreeAsset view = Resources.Load<VisualTreeAsset>(@"UI/Menus/OptionButton");

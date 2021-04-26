@@ -1,18 +1,23 @@
 using Photon.Pun;
-using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
+/// <summary>
+/// Encapsulates behaviour of an <see cref="EnemySpawner"/> object that spawns <see cref="Enemy"/> objects on a timer (displayed in-game)
+/// </summary>
 [SelectionBase]
 public class EnemySpawner : MonoBehaviourPun
 {
     [SerializeField]
+    [Tooltip("The time in seconds that the fist cycle should take")]
     private float startTime = 60;
     [SerializeField]
+    [Tooltip("The time in seconds that the subsequent cycle should take")]
     private float spawnTime = 60;
     [SerializeField]
+    [Tooltip("The number of enemies to be spawned each cycle")]
     private int spawnSize = 5;
+    [Tooltip("Enemies will be spawned within this radius")]
     [SerializeField]
     private float radius = 6;
 

@@ -1,14 +1,16 @@
 using Photon.Pun;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Encapsulates the players ability to perform <see cref="ActionType"/> actions.
+/// </summary>
 [RequireComponent(typeof(PlayerInventory))]
 public class Interactor : MonoBehaviour
 {
     private const float MAX_RAYCAST_DISTANCE = 7f;
-    private new Camera camera;
+    private Camera playerCamera;
 
     private IInteractable active;
 
@@ -17,14 +19,14 @@ public class Interactor : MonoBehaviour
     private void Awake()
     {
         actions = new Dictionary<KeyCode, Action>();
-        this.RequireComponentInChildren(out camera);
+        this.RequireComponentInChildren(out playerCamera);
 
         if (TryGetComponent(out PhotonView photonView))
         {
             if (!photonView.IsMine && PhotonNetwork.IsConnected)
             {
                 Destroy(this);
-                Destroy(camera);
+                Destroy(playerCamera);
                 return;
             }
         }
@@ -52,8 +54,8 @@ public class Interactor : MonoBehaviour
 
     public void Update()
     {
-        Vector3 cameraCenter = camera.ScreenToWorldPoint(new Vector3(Screen.width / 2f, Screen.height / 2f, camera.nearClipPlane));
-        Ray ray = new Ray(cameraCenter, camera.transform.forward);
+        Vector3 cameraCenter = playerCamera.ScreenToWorldPoint(new Vector3(Screen.width / 2f, Screen.height / 2f, playerCamera.nearClipPlane));
+        Ray ray = new Ray(cameraCenter, playerCamera.transform.forward);
         if (Physics.Raycast(ray, out RaycastHit hit, MAX_RAYCAST_DISTANCE))
         {
             GameObject go = hit.collider.gameObject;

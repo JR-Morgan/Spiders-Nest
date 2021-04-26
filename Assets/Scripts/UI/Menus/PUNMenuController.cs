@@ -1,10 +1,10 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UIElements;
 
+/// <summary>
+/// Implementation of <see cref="MenuController"/> for the multi player menu
+/// </summary>
 public class PUNMenuController : MenuController
 {
     private MainMenuElement menu;
@@ -52,7 +52,7 @@ public class PUNMenuController : MenuController
     {
         base.Start();
 
-        documentRoot.Add(menu);
+        documentParent.Add(menu);
         _currentMenu = menu;
 
         StartAnimation(AnimState.In,
@@ -64,7 +64,7 @@ public class PUNMenuController : MenuController
     private void CreateRoom(RoomField element)
     {
         element.Error_Text = "";
-        if (IsValid(element))
+        if (IsValidInput(element))
         {
             if (pun.CreateNewRoom(element.Value))
             {
@@ -96,7 +96,7 @@ public class PUNMenuController : MenuController
     private void JoinRoom(RoomField element)
     {
         element.Error_Text = "";
-        if (IsValid(element))
+        if (IsValidInput(element))
         {
             if (pun.JoinRoom(element.Value))
             {
@@ -119,7 +119,7 @@ public class PUNMenuController : MenuController
     #endregion
 
     #region Helper Methods
-    private bool IsValid(RoomField element, int minChar = 4)
+    private bool IsValidInput(RoomField element, int minChar = 4)
     {
         Debug.Log(element.Value);
         if (string.IsNullOrWhiteSpace(element.Value))

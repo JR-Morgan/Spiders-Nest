@@ -1,5 +1,9 @@
 using System.Collections.Generic;
 
+/// <summary>
+/// Encapsulates an <see cref="Enemy"/>'s agency in making AI decisions based on a basic Subsumption architecture
+/// </summary>
+/// <remarks>See <see cref="EnemyAgentFactory"/></remarks>
 public class EnemyAgent
 {
     private IList<EnemyBehaviour> behaviours;

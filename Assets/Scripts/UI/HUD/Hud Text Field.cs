@@ -2,6 +2,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
 
+/// <summary>
+/// <see cref="VisualElement"/> for displaying a string based HUD element
+/// </summary>
 public class HudTextField : VisualElement
 {
     private static readonly VisualTreeAsset view = Resources.Load<VisualTreeAsset>($@"UI/Views/{typeof(HudTextField)}");
