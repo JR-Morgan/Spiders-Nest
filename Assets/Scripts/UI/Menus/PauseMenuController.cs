@@ -22,7 +22,7 @@ public class PauseMenuController : MenuController
         VisualElement optionRoot = pause.Q(OPTION_ROOT);
 
         _currentMenu = pause;
-        container.Add(pause);
+        //container.Add(pause);
 
         optionRoot.Add(InitialiseOption("Continue", Continue));
 
@@ -30,6 +30,7 @@ public class PauseMenuController : MenuController
         exit.RegisterCallback<ClickEvent>(e => BackToMain());
         optionRoot.Add(exit);
 
+        Continue();
     }
 
     [SerializeField]
@@ -54,6 +55,7 @@ public class PauseMenuController : MenuController
 
     private void Pause()
     {
+        Debug.Log("Pause Menu Opened");
         UnityEngine.Cursor.lockState = CursorLockMode.None;
         _currentMenu.SetEnabled(true);
         container.Add(_currentMenu);
@@ -68,13 +70,27 @@ public class PauseMenuController : MenuController
 
     private void Continue()
     {
+        Debug.Log("Pause Menu Closed");
         UnityEngine.Cursor.lockState = CursorLockMode.Locked;
         _currentMenu.SetEnabled(false);
-        StartAnimation(AnimState.Out, () => {
+        if (isPaused)
+        {
+            StartAnimation(AnimState.Out, () => {
+                Resume();
+            });
+        }
+        else
+        {
+            Resume();
+        }
+
+        void Resume()
+        {
             isPaused = false;
             Time.timeScale = 1;
             _currentMenu.RemoveFromHierarchy();
-        });
+        }
+
     }
 
     private void BackToMain()

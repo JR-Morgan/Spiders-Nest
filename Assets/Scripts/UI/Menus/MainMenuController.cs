@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using UnityEngine;
 using UnityEngine.Audio;
@@ -9,6 +10,7 @@ using UnityEngine.UIElements;
 /// </summary>
 public class MainMenuController : MenuController
 {
+    private const string LEVEL_1 = "Level 1";
     [SerializeField]
     private AudioMixer masterMixer;
 
@@ -103,38 +105,46 @@ public class MainMenuController : MenuController
 
     private void StartNewGame()
     {
-        StartAnimation(AnimState.Out, () => SceneManager.LoadScene("Level 1"));
+        StartAnimation(AnimState.Out, () => SceneManager.LoadScene(LEVEL_1));
     }
 
+    /// <summary>
+    /// Attempts to restore game state from file
+    /// </summary>
     private void Continue()
     {
-        StartAnimation(AnimState.Out, () => {
+        StartAnimation(AnimState.Out, () =>
+        {
             if(LevelSwitchoverManager.DeserialiseLevel(out int level))
             {
                 SceneManager.LoadScene(level);
 
-                PlayerState.OnSerialisationReady += () =>
-                {
-                    bool successful =
-                    EnemyManager.Instance.DeserialiseEnemies()
-                    && LevelStateManager.Instance.DeserialiseLevel()
-                    && PlayerManager.Instance.Local.DeserialisePlayer();
-
-                    if (!successful)
-                    {
-                        Debug.LogError("Game save was corrupted");
-                    }
-                };
+                PlayerState.OnSerialisationReady += LoadFromSave;
 
             }
             else
             {
-                SceneManager.LoadScene("Level 1");
+                Debug.Log("No game state exists to restore from, starting new game");
+                SceneManager.LoadScene(LEVEL_1);
             }
-
 
         });
     }
 
+    private void LoadFromSave()
+    {
+        PlayerState.OnSerialisationReady -= LoadFromSave;
+        try
+        {
+            EnemyManager.Instance.DeserialiseEnemies();
+            LevelStateManager.Instance.DeserialiseLevel();
+            PlayerManager.Instance.Local.DeserialisePlayer();
+            Debug.Log("Restore game state was successful");
+        }
+        catch (Exception e)
+        {
+            Debug.LogError($"Game save was corrupted\n{e.Message}\n{e.StackTrace}", this);
+        }
+    }
 
 }

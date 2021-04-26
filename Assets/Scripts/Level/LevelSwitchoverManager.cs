@@ -50,7 +50,9 @@ public class LevelSwitchoverManager : Singleton<LevelSwitchoverManager>
             }
             else
             {
+                PlayerManager.Instance.Local.transform.position = Vector3.zero;
                 LoadScene(true, level, CursorLockMode.Locked);
+                
             }
         }
     }
@@ -99,10 +101,12 @@ public class LevelSwitchoverManager : Singleton<LevelSwitchoverManager>
 
         if (!PhotonNetwork.IsConnected)
         {
-            SerialiseLevel();
+            int sceneIndex = SerialiseLevel();
             EnemyManager.Instance.SerialiseEnemies();
             LevelStateManager.Instance.SerialiseLevel();
             PlayerManager.Instance.Local.SerialisePlayer();
+
+            Debug.Log($"Finished saving game state for scene {sceneIndex}");
         }
     }
 
@@ -131,7 +135,7 @@ public class LevelSwitchoverManager : Singleton<LevelSwitchoverManager>
 
 
 
-    public static void SerialiseLevel()
+    private static int SerialiseLevel()
     {
         LevelState l = new LevelState
         {
@@ -140,6 +144,7 @@ public class LevelSwitchoverManager : Singleton<LevelSwitchoverManager>
 
         if (!File.Exists(LEVEL_STATE_PATH)) File.Create(LEVEL_STATE_PATH).Dispose();
         File.WriteAllText(LEVEL_STATE_PATH, JsonUtility.ToJson(l));
+        return l.sceneIndex;
     }
 
 

@@ -201,22 +201,13 @@ public class LevelStateManager : MonoBehaviourPun
     private static string DOOR_STATE_PATH => Application.persistentDataPath + @"/doorState.json";
     private static string TRAP_STATE_PATH => Application.persistentDataPath + @"/trapsState.json";
 
-    public bool DeserialiseLevel()
+    public void DeserialiseLevel()
     {
-        try
-        {
-            string djson = File.ReadAllText(DOOR_STATE_PATH);
-            SetupDoors(JsonUtility.FromJson<LevelData<DoorState>>(djson).data);
+        string djson = File.ReadAllText(DOOR_STATE_PATH);
+        SetupDoors(JsonUtility.FromJson<LevelData<DoorState>>(djson).data);
 
-            string tjson = File.ReadAllText(TRAP_STATE_PATH);
-            SetupTraps(JsonUtility.FromJson<LevelData<TrapState>>(tjson).data);
-            return true;
-        }
-        catch (Exception e)
-        {
-            Debug.LogError($"{e.Message}\n{e.StackTrace}", this);
-            return false;
-        }
+        string tjson = File.ReadAllText(TRAP_STATE_PATH);
+        SetupTraps(JsonUtility.FromJson<LevelData<TrapState>>(tjson).data);
     }
 
     private void SetupDoors(IEnumerable<DoorState> data)

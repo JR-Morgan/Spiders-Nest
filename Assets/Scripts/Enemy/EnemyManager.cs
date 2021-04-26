@@ -180,19 +180,10 @@ public class EnemyManager : Singleton<EnemyManager>
 
     private static string ENEMY_STATE_PATH => Application.persistentDataPath + @"/enemyState.json";
 
-    public bool DeserialiseEnemies()
+    public void DeserialiseEnemies()
     {
-        try
-        {
-            string json = File.ReadAllText(ENEMY_STATE_PATH);
-            SetupEnemies(JsonUtility.FromJson<EnemyWrapper>(json).data);
-            return true;
-        }
-        catch (Exception e)
-        {
-            Debug.LogError($"{e.Message}\n{e.StackTrace}", this);
-            return false;
-        }
+        string json = File.ReadAllText(ENEMY_STATE_PATH);
+        SetupEnemies(JsonUtility.FromJson<EnemyWrapper>(json).data);
     }
 
     private void SetupEnemies(IEnumerable<EnemyData> data)

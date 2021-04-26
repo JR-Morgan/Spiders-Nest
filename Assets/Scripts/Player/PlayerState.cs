@@ -3,6 +3,7 @@ using System;
 using System.IO;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityTemplateProjects;
 
 /// <summary>
 /// Encapsulates the players state 
@@ -92,26 +93,19 @@ public class PlayerState : MonoBehaviour
     #region Serialisation
     public static string PLAYER_STATE_PATH => Application.persistentDataPath + @"/playerState.json";
 
-    public bool DeserialisePlayer()
+    public void DeserialisePlayer()
     {
-        try
-        {
-            string json = File.ReadAllText(PLAYER_STATE_PATH);
-            SetupPlayer(JsonUtility.FromJson<PlayerData>(json));
-            return true;
-        }
-        catch (Exception e)
-        {
-            Debug.LogError($"{e.Message}\n{e.StackTrace}", this);
-            return false;
-        }
+        string json = File.ReadAllText(PLAYER_STATE_PATH);
+        SetupPlayer(JsonUtility.FromJson<PlayerData>(json));
     }
 
     private void SetupPlayer(PlayerData data)
     {
         this.transform.position = data.position;
         this.transform.rotation = Quaternion.Euler(data.rotation);
+        if (this.TryGetComponent(out SimpleCameraController s)) s.SetTransform(transform);
         this.Inventory.Money = data.money;
+        this.Health = data.health;
         EnemyManager.Instance.NumberOfKills = data.kills;
     }
 
@@ -130,6 +124,7 @@ public class PlayerState : MonoBehaviour
             position = transform.position,
             rotation = transform.rotation.eulerAngles,
             money = Inventory.Money,
+            health = Health,
             kills = EnemyManager.Instance.NumberOfKills,
         };
 

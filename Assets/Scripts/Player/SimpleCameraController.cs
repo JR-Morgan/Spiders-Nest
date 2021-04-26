@@ -82,6 +82,11 @@ namespace UnityTemplateProjects
                 }
             }
         }
+        public void SetTransform(Transform transform)
+        {
+            m_TargetCameraState.SetFromTransform(transform);
+            m_InterpolatingCameraState.SetFromTransform(transform);
+        }
 
         void Update()
         {
