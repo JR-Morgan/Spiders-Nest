@@ -21,27 +21,27 @@ public class TrapPlacer : MonoBehaviour
     private Color placingColor;
 
     public ActionType ActiveAction { get => _activeAction;
-        set
+        private set
         {
             _activeAction = value;
             CancelPlace();
         }
     }
 
-    private new Camera camera;
+    private Camera mainCamera;
     private PlayerInventory inventory;
 
     private void Awake()
     {
         inventory = GetComponent<PlayerInventory>();
-        this.RequireComponentInChildren(out camera);
+        this.RequireComponentInChildren(out mainCamera);
 
         if (TryGetComponent(out PhotonView photonView))
         {
             if (PhotonNetwork.IsConnected && !photonView.IsMine)
             {
                 Destroy(this);
-                Destroy(camera);
+                Destroy(mainCamera);
                 return;
             }
         }
@@ -87,8 +87,8 @@ public class TrapPlacer : MonoBehaviour
 
     private bool CameraHit(out Vector3 newPosition)
     {
-        Vector3 cameraCenter = camera.ScreenToWorldPoint(new Vector3(Screen.width / 2f, Screen.height / 2f, camera.nearClipPlane));
-        Ray ray = new Ray(cameraCenter, camera.transform.forward);
+        Vector3 cameraCenter = mainCamera.ScreenToWorldPoint(new Vector3(Screen.width / 2f, Screen.height / 2f, mainCamera.nearClipPlane));
+        Ray ray = new Ray(cameraCenter, mainCamera.transform.forward);
         if (Physics.Raycast(ray, out RaycastHit hit, MAX_RAYCAST_DISTANCE))
         {
             newPosition = hit.point;
@@ -132,6 +132,7 @@ public class TrapPlacer : MonoBehaviour
                         {
                             //Local only instantiation while placing
                             go = Instantiate(ActiveAction.prefab, newPosition, Quaternion.identity);
+                            if (go.TryGetComponentInChildren(out BasicTrap trap)) trap.enabled = false;
                             placingObject = go;
                             SetColour(placingColor);
                         }

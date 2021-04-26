@@ -14,7 +14,7 @@ namespace UnityTemplateProjects
     /// </summary>
     public class SimpleCameraController : MonoBehaviour
     {
-        private new Camera camera;
+        private Camera playerCamera;
         
         class CameraState
         {
@@ -66,7 +66,7 @@ namespace UnityTemplateProjects
 
         private void Awake()
         {
-            this.RequireComponentInChildren(out camera);
+            this.RequireComponentInChildren(out playerCamera);
 
             if (TryGetComponent(out PhotonView photonView))
             {
@@ -116,7 +116,7 @@ namespace UnityTemplateProjects
             var rotationLerpPct = 1f - Mathf.Exp((Mathf.Log(1f - 0.99f) / rotationLerpTime) * Time.deltaTime);
             m_InterpolatingCameraState.LerpTowards(m_TargetCameraState, rotationLerpPct);
 
-            m_InterpolatingCameraState.UpdateTransform(transform, camera.transform);
+            m_InterpolatingCameraState.UpdateTransform(transform, playerCamera.transform);
         }
     }
 

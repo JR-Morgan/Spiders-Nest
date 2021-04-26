@@ -6,9 +6,13 @@ The game is inspired by tower defence genre.
 
 ## Gameplay
 The player must explore one of two hexagonal levels to find and unlock all the chests.
+
 Certain rooms (spawner rooms) will spawn spider enemies that the player must defeat to earn money.
-The player can summon a black hole that will swallow up enemies. This attack costs 10% of the players money (so becomes very expensive compared with traps)
+
+The player can summon a black hole that will swallow up enemies. This attack costs 10% of the players money (so becomes very expensive compared with traps).
+
 The player can also place one of two traps. These traps are a fixed cost, so become the players only option in late game.
+
 The player must manage their money, while dodging and kiting spiders unlocking rooms and exploring the level.
 
 ## Technical features
@@ -22,7 +26,12 @@ The game supports the following features:
 
 ## Controls
 Movement : W,S,A,D
+
 Camera : Mouse
+
 Use Action : Right click
+
 Interact : E
+
 Pause : Escape
+

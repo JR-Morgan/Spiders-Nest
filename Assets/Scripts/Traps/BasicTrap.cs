@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// Encapsulates an animated trap that has a modulated duty cycle
+/// Enables and disables child animations or particle system on a duty cycle
 /// </summary>
 [SelectionBase]
 [RequireComponent(typeof(AOEDamage))]
@@ -9,6 +9,7 @@ public class BasicTrap : MonoBehaviour
 {
     private AOEDamage damage;
     private Animator anim;
+    private ParticleSystem particles;
 
     #region Serialised Fields
     [SerializeField]
@@ -25,7 +26,9 @@ public class BasicTrap : MonoBehaviour
     void Awake()
     {
         damage = GetComponent<AOEDamage>();
-        this.RequireComponentInChildren(out anim);
+        anim = this.GetComponentInChildren<Animator>();
+        particles = this.GetComponentInChildren<ParticleSystem>();
+        Pause();
     }
 
     void Update()
@@ -43,18 +46,30 @@ public class BasicTrap : MonoBehaviour
 
         if (state == 0f) //If this is the start of the duty cycle
         {
-            anim.speed = 1;
-            damage.enabled = true;
+            Play();
         }
         else if (state > (1 / frequency) * dutyCycle) //if we have reached the end of the duty cycle
         {
-            anim.speed = 0;
-            damage.enabled = false;
+            Pause();
         }
 
 
 
         state += Time.deltaTime;
+    }
+
+    private void Play()
+    {
+        if (anim != null) anim.speed = 1;
+        if (particles != null) particles.Play();
+        damage.enabled = true;
+    }
+
+    private void Pause()
+    {
+        if (anim != null) anim.speed = 0;
+        if (particles != null) particles.Stop();
+        damage.enabled = false;
     }
 
 }

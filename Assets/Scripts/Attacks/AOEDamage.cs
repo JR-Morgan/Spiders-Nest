@@ -49,7 +49,7 @@ public class AOEDamage : MonoBehaviour
     {
         foreach(Enemy e in enemies)
         {
-            e.AddDamage(Damage * Time.deltaTime, PlayerManager.Instance.Local);
+            if (e != null) e.AddDamage(Damage * Time.deltaTime, PlayerManager.Instance.Local);
         }
     }
 }
