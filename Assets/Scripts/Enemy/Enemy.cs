@@ -126,18 +126,17 @@ public class Enemy : ObservableMonoBehaviour<Enemy>
             {
                 inventory.AddUnchecked(5 * (int)ModelType + 10);
             }
-            Invoke(nameof(Die), 0.0f); //Small delay to destroy on next frame
+            Invoke(nameof(Die), 0.01f); //Small delay to destroy on next frame
         }
     }
 
 
     public UnityEvent<Enemy> OnDeath;
-    public void Die(bool invokeDeath = true)
+    public void Die()
     {
         EnemyManager.Instance.UnregisterEnemy(this);
 
-        if(invokeDeath)
-            OnDeath.Invoke(this);
+        OnDeath.Invoke(this);
 
         Destroy(this.gameObject);
     }

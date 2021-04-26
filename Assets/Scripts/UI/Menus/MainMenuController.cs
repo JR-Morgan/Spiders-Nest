@@ -31,6 +31,9 @@ public class MainMenuController : MenuController
             optionRoot.Add(InitialiseOption("Leaderboard", () => {
                 StartAnimation(AnimState.Out, () => SceneManager.LoadScene(2));
             }));
+            optionRoot.Add(InitialiseOption("Exit", () => {
+                Application.Quit();
+            }));
 
         }
 
