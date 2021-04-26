@@ -1,6 +1,4 @@
 using Photon.Pun;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
@@ -14,8 +12,8 @@ public class TrapPlacer : MonoBehaviour
     [SerializeField]
     private ActionType _activeAction;
     [SerializeField]
-    [Tooltip("The key to start placing the " + nameof(ActiveAction))]
-    private KeyCode placeKey;
+    [Tooltip("The keys to start placing the " + nameof(ActiveAction))]
+    private KeyCode[] placeKeys;
     [Tooltip("The " + nameof(Color) + " to be used while placing for " + nameof(ActionType) + "s where " + nameof(ActionType.isPlaceable) + " is true")]
     [SerializeField]
     private Color placingColor;
@@ -102,46 +100,57 @@ public class TrapPlacer : MonoBehaviour
 
     private void Update()
     {
-        if (IsPlacing)
+        if(Time.timeScale > 0)
         {
-            //Update position of placingObject
-            if (CameraHit(out Vector3 newPosition))
+            if (IsPlacing)
             {
-                placingObject.transform.position = newPosition;
-            }
-
-            static float RoundToNearest(float value, float factor) => Mathf.Round(value / factor) * factor;
-
-            placingObject.transform.rotation = Quaternion.Euler(0f, RoundToNearest(this.transform.rotation.eulerAngles.y + NewLevelGenerator.THETA / 2, NewLevelGenerator.THETA / 2) + NewLevelGenerator.THETA, 0f);
-            if (Input.GetKeyDown(placeKey))
-            {
-                if (inventory.TrySubtract(inventory.CostOfAction(ActiveAction)))
-                    Place();
-            }
-        }
-        else
-        {
-            if (Input.GetKeyDown(placeKey))
-            {
-                if (inventory.CanAfford(ActiveAction)) //Safe to do unchecked inventory transactions inside body
+                //Update position of placingObject
+                if (CameraHit(out Vector3 newPosition))
                 {
-                    if (CameraHit(out Vector3 newPosition))
-                    {
-                        GameObject go;
-                        if (ActiveAction.isPlaceable)
-                        {
-                            //Local only instantiation while placing
-                            go = Instantiate(ActiveAction.prefab, newPosition, Quaternion.identity);
-                            if (go.TryGetComponentInChildren(out BasicTrap trap)) trap.enabled = false;
-                            placingObject = go;
-                            SetColour(placingColor);
-                        }
-                        else
-                        {
-                            inventory.SubtractUnchecked(inventory.CostOfAction(ActiveAction)); //Safe to do
+                    placingObject.transform.position = newPosition;
+                }
 
-                            SetupLocalTrap(InstantiateActive(newPosition, Quaternion.identity));
+                static float RoundToNearest(float value, float factor) => Mathf.Round(value / factor) * factor;
+
+                placingObject.transform.rotation = Quaternion.Euler(0f, RoundToNearest(this.transform.rotation.eulerAngles.y + NewLevelGenerator.THETA / 2, NewLevelGenerator.THETA / 2) + NewLevelGenerator.THETA, 0f);
+                foreach(KeyCode key in placeKeys)
+                {
+                    if (Input.GetKeyDown(key))
+                    {
+                        if (inventory.TrySubtract(inventory.CostOfAction(ActiveAction)))
+                            Place();
+                        break;
+                    }
+                }
+            }
+            else
+            {
+                foreach (KeyCode key in placeKeys)
+                {
+                    if (Input.GetKeyDown(key))
+                    {
+                        if (inventory.CanAfford(ActiveAction)) //Safe to do unchecked inventory transactions inside body
+                        {
+                            if (CameraHit(out Vector3 newPosition))
+                            {
+                                GameObject go;
+                                if (ActiveAction.isPlaceable)
+                                {
+                                    //Local only instantiation while placing
+                                    go = Instantiate(ActiveAction.prefab, newPosition, Quaternion.identity);
+                                    if (go.TryGetComponentInChildren(out BasicTrap trap)) trap.enabled = false;
+                                    placingObject = go;
+                                    SetColour(placingColor);
+                                }
+                                else
+                                {
+                                    inventory.SubtractUnchecked(inventory.CostOfAction(ActiveAction)); //Safe to do
+
+                                    SetupLocalTrap(InstantiateActive(newPosition, Quaternion.identity));
+                                }
+                            }
                         }
+                        break;
                     }
                 }
             }

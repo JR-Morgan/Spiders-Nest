@@ -9,6 +9,7 @@ using UnityEngine.UIElements;
 [RequireComponent(typeof(UIDocument))]
 public class ActionController : Singleton<ActionController>
 {
+    private const int DEFAULT_I = -(short.MaxValue - 1);
     private VisualElement root;
 
     [SerializeField]
@@ -43,7 +44,7 @@ public class ActionController : Singleton<ActionController>
                 elementOfType.Add(a, element);
             }
 
-            activeIndex = 0;
+            activeIndex = DEFAULT_I;
             elementOfType[Active].Is_Active = true;
         }
         else
@@ -67,17 +68,31 @@ public class ActionController : Singleton<ActionController>
         }
     }
 
+    private void SetActive(int index)
+    {
+        elementOfType[Active].Is_Active = false;
+        activeIndex = index;
+        elementOfType[Active].Is_Active = true;
+        OnActiveChange.Invoke(Active);
+    }
+
     private void Update()
     {
         float scrollDelta = Input.mouseScrollDelta.y;
         if(scrollDelta != 0)
         {
-            elementOfType[Active].Is_Active = false;
-            activeIndex += scrollDelta > 0? 1 : -1;
-            elementOfType[Active].Is_Active = true;
-            OnActiveChange.Invoke(Active);
+            SetActive(activeIndex + (scrollDelta > 0 ? 1 : -1));
         }
 
+        int alpha1 = (int)KeyCode.Alpha1;
+        int max = Mathf.Min(elementOfType.Count + alpha1, (int)KeyCode.Alpha9 + 1);
+        for (int i = alpha1; i < max; i++)
+        {
+            if (Input.GetKeyDown((KeyCode)i))
+            {
+                SetActive(DEFAULT_I - (i - (int)KeyCode.Alpha1));
+            }
+        }
     }
 
 
