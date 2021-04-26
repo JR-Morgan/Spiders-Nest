@@ -139,6 +139,7 @@ public class MainMenuController : MenuController
             EnemyManager.Instance.DeserialiseEnemies();
             LevelStateManager.Instance.DeserialiseLevel();
             PlayerManager.Instance.Local.DeserialisePlayer();
+            LevelSwitchoverManager.Instance.DeserialiseChestStates();
             Debug.Log("Restore game state was successful");
         }
         catch (Exception e)

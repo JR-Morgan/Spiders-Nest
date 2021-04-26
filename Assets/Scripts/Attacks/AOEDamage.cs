@@ -1,7 +1,9 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Applies damage on <see cref="Update"/> to <see cref="Enemy"/> within its collier
+/// </summary>
 public class AOEDamage : MonoBehaviour
 {
     [SerializeField]

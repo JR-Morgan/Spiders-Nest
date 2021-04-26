@@ -2,6 +2,7 @@ using Photon.Pun;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -25,16 +26,14 @@ public class LevelSwitchoverManager : Singleton<LevelSwitchoverManager>
 
         foreach(ChestInteractable chest in FindObjectsOfType<ChestInteractable>())
         {
-            chestsToWin++;
             chest.OnOpen.AddListener(ChestOpenEventHandler);
         }
     }
 
-    private int chestsToWin;
     private void ChestOpenEventHandler()
     {
-        chestsToWin--;
-        if(chestsToWin <= 0)
+        int numberOfChestsLeft = FindObjectsOfType<ChestInteractable>(false).Length;
+        if(numberOfChestsLeft <= 0)
         {
             Debug.Log("Game win!");
             int level = SceneManager.GetActiveScene().buildIndex + 1;
@@ -133,6 +132,19 @@ public class LevelSwitchoverManager : Singleton<LevelSwitchoverManager>
         return sceneIndex >= 0;
     }
 
+    public void DeserialiseChestStates()
+    {
+        string json = File.ReadAllText(LEVEL_STATE_PATH);
+        LevelState state = JsonUtility.FromJson<LevelState>(json);
+
+        foreach (var chest in FindObjectsOfType<ChestInteractable>())
+        {
+            if (!state.activeChests.Contains(chest.name)) Destroy(chest.gameObject);
+        }
+
+        ChestOpenEventHandler();
+    }
+
 
 
     private static int SerialiseLevel()
@@ -140,6 +152,7 @@ public class LevelSwitchoverManager : Singleton<LevelSwitchoverManager>
         LevelState l = new LevelState
         {
             sceneIndex = SceneManager.GetActiveScene().buildIndex,
+            activeChests = FindObjectsOfType<ChestInteractable>().Select(c => c.name).ToArray(),
         };
 
         if (!File.Exists(LEVEL_STATE_PATH)) File.Create(LEVEL_STATE_PATH).Dispose();
@@ -152,6 +165,7 @@ public class LevelSwitchoverManager : Singleton<LevelSwitchoverManager>
     private struct LevelState
     {
         public int sceneIndex;
+        public string[] activeChests;
     }
 
 

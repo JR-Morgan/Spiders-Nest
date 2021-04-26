@@ -19,5 +19,6 @@ public class EnemyAnimationController : MonoBehaviour
     {
         animator.SetFloat("Velocity", (agent.velocity.magnitude * 6 ) / ((int)enemy.ModelType + 1) / 3f);
         animator.SetBool("Attacking", enemy.IsAttacking);
+        animator.SetBool("IsDead", enemy.Health <= 0);
     }
 }

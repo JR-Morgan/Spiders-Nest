@@ -1,7 +1,8 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Modifies the <see cref="Transform.localScale"/> of the <see cref="GameObject"/> according to an <see cref="AnimationCurve"/>
+/// </summary>
 [SelectionBase]
 public class HoleController : MonoBehaviour
 {

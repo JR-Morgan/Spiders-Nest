@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.Events;
@@ -117,6 +118,8 @@ public class Enemy : ObservableMonoBehaviour<Enemy>
 
     public void AddDamage(float damage, PlayerState hitBy)
     {
+        if (!enabled) return;
+
         _health -= damage;
         if (_health <= 0)
         {
@@ -126,7 +129,8 @@ public class Enemy : ObservableMonoBehaviour<Enemy>
             {
                 inventory.AddUnchecked(5 * (int)ModelType + 10);
             }
-            Invoke(nameof(Die), 0.01f); //Small delay to destroy on next frame
+            this.enabled = false;
+            Invoke(nameof(Die), 0f); //Small delay to remove from EnemyManager on next frame (since the current thread may be looping over enemies)
         }
     }
 
@@ -138,9 +142,17 @@ public class Enemy : ObservableMonoBehaviour<Enemy>
 
         OnDeath.Invoke(this);
 
-        Destroy(this.gameObject);
+        StartCoroutine(DestroyAfterTime(Time.time + 1f)); //Delay death until animation has finished
     }
     #endregion
+
+    private IEnumerator DestroyAfterTime(float endTime)
+    {
+        while (Time.time < endTime) yield return null;
+
+        Destroy(this.gameObject);
+
+    }
 
 
     #region Enemy Behaviour

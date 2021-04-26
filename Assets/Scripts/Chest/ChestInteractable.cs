@@ -1,9 +1,10 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UIElements;
 
+/// <summary>
+/// Controls the behaviour of interacting with a chest
+/// </summary>
 [RequireComponent(typeof(Collider))]
 public class ChestInteractable : MonoBehaviour, IInteractable
 {
@@ -53,10 +54,10 @@ public class ChestInteractable : MonoBehaviour, IInteractable
         if (interactor.TryGetComponent(out PlayerInventory inventory)
             && inventory.TrySubtract(_cost))
         {
-
-            OnOpen.Invoke();
-
             OnHoverEnd();
+
+            this.gameObject.SetActive(false);
+            OnOpen.Invoke();
 
             Destroy(this.gameObject);
         }
