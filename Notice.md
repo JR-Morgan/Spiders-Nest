@@ -1,3 +1,5 @@
+The following assets have been externally sourced and are used under their own licences.
+
 | Asset | Author | Source | Licence |
 | --- | --- | --- | --- |
 | Music | [Philippe Groarke](https://opengameart.org/users/tarfmagougou) | [dark-ambiance](https://opengameart.org/content/dark-ambiance) | [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/) |
