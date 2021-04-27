@@ -1,5 +1,6 @@
 using Photon.Pun;
 using System;
+using System.Collections;
 using System.IO;
 using UnityEngine;
 using UnityEngine.Events;
@@ -75,6 +76,7 @@ public class PlayerState : MonoBehaviour
             //TODO change to load death screen
             OnDeath.AddListener(() => LevelSwitchoverManager.LoadScene(false, 0, CursorLockMode.None, typeof(PlayerState)));
         }
+
         Restart();
     }
 
@@ -85,6 +87,7 @@ public class PlayerState : MonoBehaviour
 
     private void Restart()
     {
+        Debug.Log("Player Restarting");
         Health = DEFAULT_HEALTH;
         transform.position = Vector3.zero;
     }
@@ -99,6 +102,12 @@ public class PlayerState : MonoBehaviour
         SetupPlayer(JsonUtility.FromJson<PlayerData>(json));
     }
 
+    IEnumerator SetPlayerPositionAgain(Vector3 position)
+    {
+        yield return null;
+        transform.position = position;
+    }
+
     private void SetupPlayer(PlayerData data)
     {
         this.transform.position = data.position;
@@ -107,6 +116,8 @@ public class PlayerState : MonoBehaviour
         this.Inventory.Money = data.money;
         this.Health = data.health;
         EnemyManager.Instance.NumberOfKills = data.kills;
+        Debug.LogError(data.position);
+        StartCoroutine(SetPlayerPositionAgain(data.position)); //For some reason, on some builds, the players position will be reset to 0,0 (I can't find where) so this just sets it again next frame
     }
 
     public void SerialisePlayer()
