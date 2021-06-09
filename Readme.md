@@ -2,6 +2,8 @@
 Spider's Nest is a first-person 3D video game created for CS3450 Game Development coursework.
 The game is inspired by tower defence genre.
 
+To download, please visit the game over on [Itch.io](https://jr-morgan.itch.io/the-spiders-nest)
+
 *Warning: For those with arachnophobia, this game contains quite a few Spiders.*
 
 ## Gameplay
